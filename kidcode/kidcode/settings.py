@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'kidcode.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'KidCode',
-        'USER': 'kidcode',
-        'PASSWORD': '1111',
+        'NAME': 'zelenko',
+        'USER': 'admin',
+        'PASSWORD': 'admin',
         'HOST': '188.225.39.86',
         'PORT': 5432,
     }
