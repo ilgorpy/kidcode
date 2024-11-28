@@ -5,14 +5,93 @@
 <head>
     <meta charset="UTF-8">
     <title>KidCode</title>
-</head>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
 
+        /* Сайдбар */
+        .sidebar {
+            position: fixed;
+            left: -250px; /* Скрыт за экраном */
+            top: 0;
+            height: 100%;
+            width: 250px;
+            background-color: #333;
+            color: white;
+            transition: left 0.3s ease;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .sidebar.active {
+            left: 0; /* Сайдбар выезжает */
+        }
+
+        .menu-item {
+            margin: 15px 0;
+        }
+
+        .menu-item a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .menu-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Кнопка внутри сайдбара */
+        .toggle-btn {
+            position: absolute;
+            right: -50px; /* Кнопка находится за пределами сайдбара */
+            top: 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 5px;
+            z-index: 2000;
+        }
+
+        .toggle-btn:hover {
+            background-color: #555; /* Легкий эффект наведения */
+        }
+    </style>
+</head>
 <body>
+    <!-- Сайдбар -->
+    <div class="sidebar" id="sidebar">
+        <!-- Кнопка прикреплена к сайдбару -->
+        <button class="toggle-btn" id="toggle-sidebar">☰</button>
+
+        {% for item in menu %}
+            <div class="menu-item">
+                <a href="{% url item.url_name %}">{{ item.title }}</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Получаем элементы
+        const toggleBtn = document.getElementById('toggle-sidebar');
+        const sidebar = document.getElementById('sidebar');
+
+        // Логика открытия/закрытия сайдбара
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+    </script>
+
     <tr>
         <td>
-            <!-- Основной контент -->
             <div class="content-text">
                 {% block content %}
+
                 {% endblock %}
             </div>
         </td>
