@@ -4,4 +4,31 @@
 
 {% include  'mainapp/includes/leftbar.html' %}
 
+<table>
+    <thead>
+      <tr>
+        <th>Имя</th>
+        <th>ID задачи</th>
+        <th>Уровень</th>
+        <th>Дата сдачи</th>
+        <th>Статус</th>
+        <th>Оценка</th>
+        <th>Код</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for entry in journal_data %}
+        <tr>
+          <td>{{ entry.name }}</td>
+          <td>{{ entry.task_id }}</td>
+          <td>{{ entry.level }}</td>
+          <td>{{ entry.submission_date }}</td>
+          <td>{{ entry.status }}</td>
+          <td>{{ entry.grade }}</td>
+          <td>{{ entry.code }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
 {% endblock %}

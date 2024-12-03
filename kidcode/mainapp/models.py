@@ -37,3 +37,27 @@ class GameField(models.Model):
     cube = models.IntegerField()
     hole = models.IntegerField()
     block = models.IntegerField()
+
+
+class JournalViewManager(models.Manager):
+    def get_queryset(self):
+        fields = [field.name for field in JournalView._meta.fields]  # Получаем имена полей как строки
+        return super().get_queryset().values(*fields)
+       
+
+class JournalView(models.Model):
+    objects = JournalViewManager()
+    
+    name = models.CharField(max_length=100)
+    task_id = models.IntegerField()
+    level = models.IntegerField()
+    submission_date = models.DateField()
+    status = models.CharField(max_length=15)
+    grade = models.CharField(max_length=4)
+    code = models.TextField()
+
+    class Meta:
+        managed = False
+        db_table = 'journal_view'
+
+
