@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Профиль</h1>
+{% if user.is_authenticated %}
+				<li class="last">{{user.email}}</a></li>
+{% endif %}
+<ul>
+    {% if user.is_staff %}       
+        <li><a href="{% url 'mainapp:journal' %}">Журнал</a></li>       
+    {% else %}
+        <li><a href="{% url 'mainapp:record' %}">Успеваемость</a></li>       
+    {% endif %}
+    </ul>
+<a href="{% url 'users:logout' %}">Выйти</a>
+
+{% endblock %}

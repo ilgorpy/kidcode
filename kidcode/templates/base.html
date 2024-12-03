@@ -5,7 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <title>KidCode</title>
-    <style>
+    <link type="text/css" href="{% static 'mainapp/css/styles.css' %}" rel="stylesheet" />
+    {% comment %} <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -61,10 +62,10 @@
         .toggle-btn:hover {
             background-color: #555; /* Легкий эффект наведения */
         }
-    </style>
+    </style> {% endcomment %}
 </head>
 <body>
-    <!-- Сайдбар -->
+    {% comment %} <!-- Сайдбар -->
     <div class="sidebar" id="sidebar">
         <!-- Кнопка прикреплена к сайдбару -->
         <button class="toggle-btn" id="toggle-sidebar">☰</button>
@@ -85,10 +86,32 @@
         toggleBtn.addEventListener('click', () => {
             sidebar.classList.toggle('active');
         });
-    </script>
+    </script> {% endcomment %}
 
     <tr>
         <td>
+            {% block menu %}
+            <div class="header">
+            
+                
+                <ul>
+                    {% if user.is_staff %}
+                        
+                        {% for item in menu %}
+                        <li><a href="{% url item.url_name %}">{{ item.title }}</a></li>
+                        {% endfor %}
+                    {% else %}
+                        
+                        {% for item in menu %}
+                        {% if item.title == "Профиль" %}
+                            <li><a href="{% url item.url_name %}">{{ item.title }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    </ul>
+                      
+            </div>
+            {% endblock menu %}
             <div class="content-text">
                 {% block content %}
 

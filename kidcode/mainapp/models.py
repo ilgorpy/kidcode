@@ -12,12 +12,15 @@ class Task(models.Model):
 
 class Grade(models.Model):
     STATUS_CHOICES = [
-    ('pass', 'Зачет'),
-    ('fail', 'Не зачет'),
     ('sended', 'Отправлено'),
     ('not_sended', 'Не отправлено'),
     ]
+    GRADES = [
+        ('pass', 'зачет'),
+        ('fail', 'не зачет'),
+    ]
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, null=True, blank=True)
+    grade = models.CharField(max_length=4, choices=GRADES, null=True, blank=True)
     submission_date = models.DateField(null=True, blank=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     user = models.ForeignKey('users.User', on_delete=models.CASCADE)

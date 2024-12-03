@@ -16,6 +16,7 @@ def profile(request):
 
 
 def journal(request):
+    
     return render(request, 'mainapp/journal.html')
 
 
