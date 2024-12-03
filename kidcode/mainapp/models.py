@@ -12,12 +12,15 @@ class Task(models.Model):
 
 class Grade(models.Model):
     STATUS_CHOICES = [
-    ('pass', 'Зачет'),
-    ('fail', 'Не зачет'),
     ('sended', 'Отправлено'),
     ('not_sended', 'Не отправлено'),
     ]
+    GRADES = [
+        ('pass', 'зачет'),
+        ('fail', 'не зачет'),
+    ]
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, null=True, blank=True)
+    grade = models.CharField(max_length=4, choices=GRADES, null=True, blank=True)
     submission_date = models.DateField(null=True, blank=True)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     user = models.ForeignKey('users.User', on_delete=models.CASCADE)
@@ -34,3 +37,27 @@ class GameField(models.Model):
     cube = models.IntegerField()
     hole = models.IntegerField()
     block = models.IntegerField()
+
+
+class JournalViewManager(models.Manager):
+    def get_queryset(self):
+        fields = [field.name for field in JournalView._meta.fields]  # Получаем имена полей как строки
+        return super().get_queryset().values(*fields)
+       
+
+class JournalView(models.Model):
+    objects = JournalViewManager()
+    
+    name = models.CharField(max_length=100)
+    task_id = models.IntegerField()
+    level = models.IntegerField()
+    submission_date = models.DateField()
+    status = models.CharField(max_length=15)
+    grade = models.CharField(max_length=4)
+    code = models.TextField()
+
+    class Meta:
+        managed = False
+        db_table = 'journal_view'
+
+

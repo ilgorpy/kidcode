@@ -1,5 +1,3 @@
-{% extends 'base.html' %}
-
 {% block content %}
 <h1>Авторизация</h1>
 <form method="post">
@@ -17,5 +15,6 @@
         <div class="form-error">{{ f.errors }}</div>
     {% endfor %}
     <p><button type="submit" class="button">Войти</button></p>
+    <p>Еще нет аккаунта? <a href="{% url 'users:register' %}">Зарегистрироваться</a></p>  
 </form>
 {% endblock %}
