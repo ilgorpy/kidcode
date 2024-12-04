@@ -1,10 +1,9 @@
 from django.db import models
 
 class Task(models.Model):
-    name = models.CharField(max_length=100)
     deadline = models.DateField()
-    level = models.IntegerField()
-    chapter = models.IntegerField()
+    level = models.CharField(max_length=100)
+    chapter = models.CharField(max_length=100)
     clue = models.TextField()
     difficult = models.CharField(max_length=6, choices=[('easy', 'Легкий'), ('medium', 'Средний'), ('hard', 'Сложный')])
     gamefield = models.ForeignKey('GameField', on_delete=models.CASCADE)
@@ -47,10 +46,9 @@ class JournalViewManager(models.Manager):
 
 class JournalView(models.Model):
     objects = JournalViewManager()
-    
     name = models.CharField(max_length=100)
+    level = models.CharField(max_length=100)
     task_id = models.IntegerField()
-    level = models.IntegerField()
     submission_date = models.DateField()
     status = models.CharField(max_length=15)
     grade = models.CharField(max_length=4)
@@ -58,6 +56,6 @@ class JournalView(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'journal_view'
+        db_table = 'newview'
 
 

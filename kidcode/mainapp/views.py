@@ -1,11 +1,34 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from users.models import User
+from mainapp.forms import JournalForm
 from mainapp.models import *
+from django.db.models import Q
 
 
 def journal(request):
-    journal_data = list(JournalView.objects.all()) # используем кастомный менеджер
-    return render(request, 'mainapp/journal.html', {'journal_data': journal_data})
+    journal_data = []
+    form = JournalForm(request.GET)
+
+    if form.is_valid():
+        status = form.cleaned_data.get('status')
+        level = form.cleaned_data.get('level')
+        user_name = form.cleaned_data.get('name')
+
+        filters = Q()
+        if status:
+            filters &= Q(status=status)
+        if level:
+            filters &= Q(level=level)
+        if user_name:
+            filters &= Q(name__iexact=user_name)
+
+        journal_data = list(JournalView.objects.filter(filters))
+
+    else:
+        journal_data = list(JournalView.objects.all())
+        
+    return render(request, 'mainapp/journal.html', {'journal_data': journal_data, 'form': form})
    
 
 def index(request):
