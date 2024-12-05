@@ -6,7 +6,6 @@ app_name = 'mainapp'
 urlpatterns = [
     path('', views.index, name='home'),
     path('constructor/', views.constructor, name='constructor'),
-    #path('profile/', views.profile, name='profile'),
     path('profile/', views.UserPasswordChange.as_view(), name = 'profile'),
     path('journal/', views.journal, name='journal'),
     path('record/', views.record, name='record'),

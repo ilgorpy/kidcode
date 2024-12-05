@@ -11,10 +11,12 @@ class Task(models.Model):
 
 class Grade(models.Model):
     STATUS_CHOICES = [
-    ('sended', 'Отправлено'),
-    ('not_sended', 'Не отправлено'),
+        ('', 'Любой'),
+        ('sended', 'Отправлено'),
+        ('not_sended', 'Не отправлено'),
     ]
     GRADES = [
+        ('', 'Любой'),
         ('pass', 'зачет'),
         ('fail', 'не зачет'),
     ]
@@ -58,4 +60,20 @@ class JournalView(models.Model):
         managed = False
         db_table = 'newview'
 
+class JournalViewManager(models.Manager):
+    def get_queryset(self):
+        fields = [field.name for field in RecordView._meta.fields]
+        return super().get_queryset().values(*fields)
+    
+class RecordView(models.Model):
+    grade = models.CharField(max_length=4)
+    level = models.CharField(max_length=100)
+    chapter = models.CharField(max_length=100)
+    submission_date = models.DateField()
+    deadline = models.DateField()
+    user_id = models.IntegerField()
 
+    class Meta:
+        managed = False
+        db_table = 'newview_1'
+    

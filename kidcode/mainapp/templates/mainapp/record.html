@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% include  'mainapp/includes/leftbar.html' %}
+
+<h1 class = "h">Успевамость</h1>
+
+<form method="get" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="filter-grid">
+      {% for f in form %}
+        <div class="filter-group">
+          <label class="form-label" for="{{ f.id_for_label }}">{{ f.label }}</label>
+          {{ f }}
+         <!-- <div class="form-error">{{ f.errors }}</div>/!-->
+        </div>
+      {% endfor %}
+      <!--<div class="form-error">{{ form.non_field_errors }}</div>/!-->
+              
+      <button type="submit">Фильтр</button>
+    </div>
+  </form>
+
+  <div class="table-container">
+  <table class="journal-table">
+    <thead>
+      <tr>
+        <th>Выполнение</th>
+        <th>Уровень</th>
+        <th>Раздел</th>
+        <th>Дата сдачи</th>
+        <th>Дедлайн</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for entry in record_data %}
+        <tr>
+            <td>
+            <select class="grade-select">
+                <option value="pass" {% if entry.grade == 'pass' %}selected{% endif %}>Зачет</option>
+                <option value="fail" {% if entry.grade == 'fail' %}selected{% endif %}>Незачет</option>
+            </select>
+            </td>
+            <td>{{ entry.level }}</td>
+            <td>{{ entry.chapter }}</td>
+            <td>{{ entry.submission_date }}</td>
+            <td>{{ entry.deadline }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <button class="save-btn">Сохранить</button>
+</div>
+
+{% endblock %}

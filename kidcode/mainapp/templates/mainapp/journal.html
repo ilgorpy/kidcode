@@ -4,7 +4,7 @@
 
 {% include  'mainapp/includes/leftbar.html' %}
 <h1 class = "h">Журнал</h1>
-<form2 method="get" enctype="multipart/form-data">
+<form method="get" enctype="multipart/form-data">
   {% csrf_token %}
   <div class="filter-grid">
     {% for f in form %}
@@ -18,7 +18,7 @@
             
     <button type="submit">Фильтр</button>
   </div>
-</form2>
+</form>
 
 
 <div class="table-container">
@@ -42,7 +42,7 @@
           <td>{{ entry.level }}</td>
           <td>{{ entry.submission_date }}</td>
           <td>
-            {% if entry.status == 'success' %}
+            {% if entry.status == 'sended' %}
               <span class="status success">✔</span>
             {% else %}
               <span class="status fail">✖</span>
@@ -50,8 +50,8 @@
           </td>
           <td>
             <select class="grade-select">
-              <option value="Зачет" {% if entry.grade == 'Зачет' %}selected{% endif %}>Зачет</option>
-              <option value="Незачет" {% if entry.grade == 'Незачет' %}selected{% endif %}>Незачет</option>
+              <option value="pass" {% if entry.grade == 'pass' %}selected{% endif %}>Зачет</option>
+              <option value="fail" {% if entry.grade == 'fail' %}selected{% endif %}>Незачет</option>
             </select>
           </td>
           <td>

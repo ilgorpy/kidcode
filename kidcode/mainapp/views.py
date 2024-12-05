@@ -1,13 +1,35 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from users.models import User
-from mainapp.forms import JournalForm
 from mainapp.models import *
 from django.db.models import Q
 from django.urls import reverse, reverse_lazy
-from .forms import  UserPasswordChangeForm
+from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm
+from django.views.generic import UpdateView
 from django.contrib.auth.views import PasswordChangeView
 
+
+def record(request):
+    record_data = []
+    form = RecordForm(request.GET)
+    user_id = request.user.id
+    filters = Q(user_id=user_id)
+
+    if form.is_valid():
+        grade = form.cleaned_data.get('grade')
+        level = form.cleaned_data.get('level')
+
+        if grade:
+            filters &= Q(grade=grade)
+        if level:
+            filters &= Q(level=level)
+
+        record_data = list(RecordView.objects.filter(filters))
+
+    else:
+        record_data = list(RecordView.objects.filter(filters))
+    
+    return render(request, 'mainapp/record.html', {'record_data': record_data, 'form': form})
 
 
 def journal(request):
@@ -51,34 +73,10 @@ class UserPasswordChange(PasswordChangeView):
     success_url = reverse_lazy("users:password_change_done")
     template_name = "mainapp/profile.html"
 
-
-# def journal(request):
-#     data = {
-#         'name': [],
-#         'task_id': [],
-#         'level': [],
-#         'submission_date': [],
-#         'status': [],
-#         'grade': [],
-#         'code': [],
-#     }
-
-#     grades = Grade.objects.select_related('task', 'code', 'user')
-
-#     for grade in grades:
-#         data['name'].append(grade.user.name)
-#         data['task_id'].append(grade.task.id)
-#         data['level'].append(grade.task.level)
-#         data['submission_date'].append(grade.submission_date)
-#         data['status'].append(grade.status)
-#         data['grade'].append(grade.grade)
-#         data['code'].append(grade.code.code)
-
-#     return render(request, 'mainapp/journal.html')
-
-
-def record(request):
-    return render(request, 'mainapp/record.html')
+class UserNameChange(UpdateView):
+    form_class = UserNameChangeForm
+    success_url = reverse_lazy("mainapp:profile")
+    template_name = "mainapp/profile.html"
 
 
 def task(request):
