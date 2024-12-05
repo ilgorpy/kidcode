@@ -21,9 +21,9 @@
                         </ul>
                     </div>
                     <a href="{% url 'users:login'%}"><img src="{% static 'mainapp/images/pixel-last.png' %}" alt="logo" class = "logo"></a>
-                    <p>Я сосал меня ебали</p>
+                    <p>Я не знаю что тут написать</p>
+                    <div class =  "button-grid">
                     {% if user.is_staff %}
-                        <div class =  "button-grid">
                             {% for item in menu %}
                                  <a href="{% url item.url_name %}" class="button">{{ item.title }}</a>
                             {% endfor %}
@@ -33,15 +33,16 @@
                                 <a href="{% url item.url_name %}" class="button">{{ item.title }}</a>
                             {% endif %}
                         {% endfor %}
-                        </div>
+                        
                     {% endif %}
+                </div>
                   
             </div>
         </div>
-            <div class="content-text">
+            
                 {% block content %}
                 
                 {% endblock %}
-            </div>
+            
 </body>
 </html>

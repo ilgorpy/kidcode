@@ -3,30 +3,31 @@
 {% block content %}
 
 {% include  'mainapp/includes/leftbar.html' %}
-
-<form method="get" enctype="multipart/form-data">
+<h1 class = "h">Журнал</h1>
+<form2 method="get" enctype="multipart/form-data">
   {% csrf_token %}
-  <div class="form-grid">
+  <div class="filter-grid">
     {% for f in form %}
-      <div class="form-group">
+      <div class="filter-group">
         <label class="form-label" for="{{ f.id_for_label }}">{{ f.label }}</label>
         {{ f }}
-        <div class="form-error">{{ f.errors }}</div>
+       <!-- <div class="form-error">{{ f.errors }}</div>/!-->
       </div>
     {% endfor %}
-    <div class="form-error">{{ form.non_field_errors }}</div>
+    <!--<div class="form-error">{{ form.non_field_errors }}</div>/!-->
             
     <button type="submit">Фильтр</button>
   </div>
-</form>
+</form2>
 
 
-<table>
+<div class="table-container">
+  <table class="journal-table">
     <thead>
       <tr>
-        <th>Имя</th>
-        <th>ID задачи</th>
-        <th>Уровень</th>
+        <th>ФИО</th>
+        <th>ID Уровня</th>
+        <th>Название уровня</th>
         <th>Дата сдачи</th>
         <th>Статус</th>
         <th>Оценка</th>
@@ -40,12 +41,27 @@
           <td>{{ entry.task_id }}</td>
           <td>{{ entry.level }}</td>
           <td>{{ entry.submission_date }}</td>
-          <td>{{ entry.status }}</td>
-          <td>{{ entry.grade }}</td>
-          <td>{{ entry.code }}</td>
+          <td>
+            {% if entry.status == 'success' %}
+              <span class="status success">✔</span>
+            {% else %}
+              <span class="status fail">✖</span>
+            {% endif %}
+          </td>
+          <td>
+            <select class="grade-select">
+              <option value="Зачет" {% if entry.grade == 'Зачет' %}selected{% endif %}>Зачет</option>
+              <option value="Незачет" {% if entry.grade == 'Незачет' %}selected{% endif %}>Незачет</option>
+            </select>
+          </td>
+          <td>
+            <button class="download-btn">⬇</button>
+          </td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
+  <button class="save-btn">Сохранить</button>
+</div>
 
 {% endblock %}

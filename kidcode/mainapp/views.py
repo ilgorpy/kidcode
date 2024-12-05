@@ -4,6 +4,10 @@ from users.models import User
 from mainapp.forms import JournalForm
 from mainapp.models import *
 from django.db.models import Q
+from django.urls import reverse, reverse_lazy
+from .forms import  UserPasswordChangeForm
+from django.contrib.auth.views import PasswordChangeView
+
 
 
 def journal(request):
@@ -41,6 +45,11 @@ def constructor(request):
 
 def profile(request):
     return render(request, 'mainapp/profile.html')
+
+class UserPasswordChange(PasswordChangeView):
+    form_class = UserPasswordChangeForm
+    success_url = reverse_lazy("users:password_change_done")
+    template_name = "mainapp/profile.html"
 
 
 # def journal(request):
