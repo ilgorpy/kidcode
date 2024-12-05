@@ -55,6 +55,7 @@ class JournalView(models.Model):
     status = models.CharField(max_length=15)
     grade = models.CharField(max_length=4)
     code = models.TextField()
+    grade_id = models.IntegerField()
 
     class Meta:
         managed = False

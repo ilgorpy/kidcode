@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 
 {% include  'mainapp/includes/leftbar.html' %}
@@ -36,26 +36,26 @@
     </thead>
     <tbody>
       {% for entry in journal_data %}
-        <tr>
+        <tr data-grade-id="{{ entry.grade_id }}">  <!-- Добавлен data-grade-id -->
           <td>{{ entry.name }}</td>
           <td>{{ entry.task_id }}</td>
           <td>{{ entry.level }}</td>
           <td>{{ entry.submission_date }}</td>
           <td>
             {% if entry.status == 'sended' %}
-              <span class="status success">✔</span>
+              <span class="status success">✔️</span>
             {% else %}
-              <span class="status fail">✖</span>
+              <span class="status fail">✖️</span>
             {% endif %}
           </td>
           <td>
-            <select class="grade-select">
+            <select class="grade-select" data-grade-id="{{ entry.grade_id }}"> <!-- data-grade-id added here as well -->
               <option value="pass" {% if entry.grade == 'pass' %}selected{% endif %}>Зачет</option>
               <option value="fail" {% if entry.grade == 'fail' %}selected{% endif %}>Незачет</option>
             </select>
           </td>
           <td>
-            <button class="download-btn">⬇</button>
+            <button class="download-btn">⬇️</button>
           </td>
         </tr>
       {% endfor %}
@@ -63,5 +63,5 @@
   </table>
   <button class="save-btn">Сохранить</button>
 </div>
-
+<script src="{% static 'mainapp/js/update_grade.js' %}"></script>
 {% endblock %}

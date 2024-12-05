@@ -10,4 +10,5 @@ urlpatterns = [
     path('journal/', views.journal, name='journal'),
     path('record/', views.record, name='record'),
     path('task/', views.task, name='task'),
+    path('update_grade/', views.update_grade, name='update_grade'),
 ]

@@ -1,4 +1,5 @@
-from django.http import HttpResponse
+from django.db import connection
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from users.models import User
 from mainapp.models import *
@@ -7,7 +8,26 @@ from django.urls import reverse, reverse_lazy
 from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm
 from django.views.generic import UpdateView
 from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST, require_http_methods
 
+
+@login_required
+@require_POST
+def update_grade(request):
+    if 'grade_id' not in request.POST or 'new_grade' not in request.POST:
+        return JsonResponse({'error': 'grade_id and new_grade are required'}, status=400)
+
+    grade_id = request.POST.get('grade_id')
+    new_grade = request.POST.get('new_grade')
+
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute("UPDATE mainapp_grade SET grade = %s WHERE id = %s", [new_grade, grade_id])
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+        
 
 def record(request):
     record_data = []

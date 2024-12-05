@@ -37,10 +37,12 @@
       {% for entry in record_data %}
         <tr>
             <td>
-            <select class="grade-select">
-                <option value="pass" {% if entry.grade == 'pass' %}selected{% endif %}>Зачет</option>
-                <option value="fail" {% if entry.grade == 'fail' %}selected{% endif %}>Незачет</option>
-            </select>
+              {% if entry.grade == 'pass' %}
+              <span>Зачет</span>
+              {% else %}
+              <span>Незачет</span>
+              {% endif %}
+            
             </td>
             <td>{{ entry.level }}</td>
             <td>{{ entry.chapter }}</td>
