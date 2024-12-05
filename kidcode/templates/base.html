@@ -6,38 +6,42 @@
     <meta charset="UTF-8">
     <title>KidCode</title>
     <link type="text/css" href="{% static 'mainapp/css/styles.css' %}" rel="stylesheet" />
+    <script src="{% static 'mainapp/js/scripts.js' %}" defer></script>
 </head>
-<div class = "body">
 <body>
-    <tr>
-        <td>
-            {% block menu %}
+           
             <div class="header">
-                <ul>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+                    <div class="sidebar" id="sidebar">
+                        <ul>
+                            <li><a href="#">Задание 1</a></li>
+                            <li><a href="#">Задание 1</a></li>
+                            <li><a href="#">Задание 1</a></li>
+                            <li><a href="#">Задание 1</a></li>
+                        </ul>
+                    </div>
+                    <a href="{% url 'users:login'%}"><img src="{% static 'mainapp/images/pixel-last.png' %}" alt="logo" class = "logo"></a>
+                    <p>Я сосал меня ебали</p>
                     {% if user.is_staff %}
-                        
-                        {% for item in menu %}
-                        <li><a href="{% url item.url_name %}">{{ item.title }}</a></li>
-                        {% endfor %}
+                        <div class =  "button-grid">
+                            {% for item in menu %}
+                                 <a href="{% url item.url_name %}" class="button">{{ item.title }}</a>
+                            {% endfor %}
                     {% else %}
-                        
                         {% for item in menu %}
-                        {% if item.title == "Профиль" %}
-                            <li><a href="{% url item.url_name %}">{{ item.title }}</a></li>
-                        {% endif %}
+                            {% if item.title == "Профиль" %}
+                                <a href="{% url item.url_name %}" class="button">{{ item.title }}</a>
+                            {% endif %}
                         {% endfor %}
+                        </div>
                     {% endif %}
-                    </ul>
-                      
+                  
             </div>
-            {% endblock menu %}
+        </div>
             <div class="content-text">
                 {% block content %}
                 
                 {% endblock %}
             </div>
-        </td>
-    </tr>
 </body>
-</div>
 </html>

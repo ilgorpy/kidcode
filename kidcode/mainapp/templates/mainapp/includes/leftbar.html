@@ -3,6 +3,7 @@
 				<li class="last">{{user.email}}</a></li>
 {% endif %}
 <ul>
+        <li><a href = "{% url 'mainapp:profile' %}">Детали профиля</a></li>
     {% if user.is_staff %}       
         <li><a href="{% url 'mainapp:journal' %}">Журнал</a></li>       
     {% else %}

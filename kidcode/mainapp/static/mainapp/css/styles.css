@@ -1,14 +1,24 @@
 .header {
     background: #4E4D4D;
     height: 75px;
+    width: 100%;
+    align-self: first baseline;
+    display: flex;
+    z-index: 10;
   }
 
-  .logo {
-    background: url('../images/logo.png') no-repeat 10px 5px;
-    width: 70px;
-    height: 60px;
+  form img{
+    width: 200px;
+    height: 200px;
+    margin-top: 30px;
   }
-  
+
+  a img{
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+  }
+
   body {
     margin: 0;
     padding: 0;
@@ -30,9 +40,18 @@
   margin-right: 70px;
 }
 
+.form-grid_login {
+  display: flex;
+  flex-wrap: wrap; /* Позволяет перенос элементов */
+  gap: 20px; /* Расстояние между элементами */
+  justify-content: space-between; /* Равномерное распределение */
+  margin-left: 60px;
+  margin-right: 60px;
+}
+
 /* Поля */
 .form-group {
-  width: calc(50% - 10px); /* Половина ширины строки с отступом */
+  width: calc(50% - 25px); /* Половина ширины строки с отступом */
   display: flex;
   flex-direction: column; /* Вертикальное расположение */
 }
@@ -43,7 +62,8 @@
   margin-bottom: 5px; /* Отступ между текстом и полем */
   width: 150px;
   text-align: left;
-  
+  font-size: 16px;
+  white-space: nowrap;
 }
 
 /* Ошибки */
@@ -56,35 +76,38 @@
 /* Контейнер формы */
 form {
     background-color: #22231E; /* Темно-серый фон для формы */
-    padding: 40px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     text-align: center;
-    max-width: 700px; /* Максимальная ширина формы */
-    max-height: 800px;
+    width: 600px; /* Максимальная ширина формы */
+    height: 800px;
 }
+
 
 /* Заголовок */
 form h1 {
   font-family: monocraft;
     font-size: 30px;
     margin-bottom: 20px;
-    margin-top: 230px;
-    font-weight: bold;
+    margin-top: 20px;
 }
 
 /* Текст описания */
 form p {
     font-size: 18px;
     color: #aaaaaa;
-    margin-bottom: 30px;
+    
+}
+
+p{
+  white-space: nowrap;
 }
 
 /* Поля ввода */
 form input[type="email"],
 form input[type="text"],
 form input[type="password"] {
-    width: 200px;
+    width: calc(100%);
     height: 40px;
     padding: 10px;
     margin-bottom: 20px;
@@ -98,6 +121,7 @@ form input[type="password"] {
 }
 
 
+
 /* Кнопка регистрации */
 form button {
     width: 560px;
@@ -105,24 +129,24 @@ form button {
     padding: 10px;
     border: none;
     border-radius: 4px;
-    background-color: #00c853; /* Ярко-зеленый цвет кнопки */
+    background-color: #0EA524; /* Ярко-зеленый цвет кнопки */
     color: #ffffff;
+    font-family: monocraft;
     font-size: 16px;
-    font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 /* Эффект наведения для кнопки */
 form button:hover {
-    background-color: #009624; /* Более темный зеленый при наведении */
+    background-color: #11ec44; /* Более темный зеленый при наведении */
 }
 
 /* Ссылка для входа */
 form a {
-    color: #00c853;
+    color: #0EA524;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 /* Эффект наведения для ссылки */
@@ -130,4 +154,94 @@ form a:hover {
     text-decoration: underline;
 }
 
-  
+.url{
+  margin-top: -20px;
+}
+
+#id_username.form-input{
+  margin-left: 20px;
+}
+
+a.button {
+  width: 120px;
+  height: 50px;
+  border: none;
+  border-radius: 4px;
+  background-color: #0EA524; /* Ярко-зеленый цвет кнопки */
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-self: center;
+  text-decoration: none; 
+  display: flex; /* Используем Flexbox */
+  justify-content: center; /* Центровка по горизонтали */
+  align-items: center; /* Центровка по вертикали */
+}
+
+.button-grid{
+  margin-inline-start: calc(100% - 550px);
+  display: flex;
+  gap: 20px;
+}
+
+a{
+  text-decoration: none;
+  color: #ffffff;
+  font-family: monocraft;
+}
+.sidebar-toggle {
+  background-color: #4E4D4D;
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  border: none;
+  font-size: 20px;
+}
+
+/* Сайдбар */
+#sidebar {
+  position: fixed;
+  top: 75px;  /* Выдвигаем сайдбар ниже шапки */
+  left: -250px; /* Начальная позиция скрытого сайдбара */
+  width: 250px;
+  height: 100%;
+  background-color: #333;
+  color: white;
+  transition: left 0.3s ease;
+  z-index: 5; /* Сайдбар будет под шапкой, но выше основного контента */
+  padding-top: 20px;
+}
+
+/* Ссылки в сайдбаре */
+.sidebar a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: white;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidebar a:hover {
+  color: #f1f1f1;
+}
+
+#sidebar.active {
+  left: 0;  /* Сайдбар будет выдвигаться на экран */
+}
+
+/* Когда сайдбар открыт */
+.sidebar.open {
+  width: 250px;
+}
+
+/* Контент смещается, когда сайдбар открыт */
+body.sidebar-open {
+  margin-left: 250px;
+}
+
+.content-text{
+  justify-content: space-between;
+}
+
