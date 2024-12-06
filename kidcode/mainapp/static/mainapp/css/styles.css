@@ -313,7 +313,7 @@ body.sidebar-open {
   position: absolute;
 }
 
-#id_name.form-input, #id_level.form-input, #id_status{
+#id_name.form-input, #id_level.form-input, #id_status, #id_grade{
   width: 200px;
   height: 40px;
   padding: 10px;
