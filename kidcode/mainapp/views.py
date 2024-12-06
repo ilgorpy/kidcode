@@ -2,6 +2,7 @@ from django.db import connection
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from users.models import User
+from django.contrib import messages
 from mainapp.models import *
 from django.db.models import Q
 from django.urls import reverse, reverse_lazy
@@ -90,13 +91,17 @@ def profile(request):
 
 class UserPasswordChange(PasswordChangeView):
     form_class = UserPasswordChangeForm
-    success_url = reverse_lazy("users:password_change_done")
     template_name = "mainapp/profile.html"
+    success_url = reverse_lazy("users:password_change_done")
+    def form_valid(self, form):
+        messages.success(self.request, "Пароль успешно изменён!")
+        return super().form_valid(form)
 
 class UserNameChange(UpdateView):
     form_class = UserNameChangeForm
     success_url = reverse_lazy("mainapp:profile")
     template_name = "mainapp/profile.html"
+    
 
 
 def task(request):

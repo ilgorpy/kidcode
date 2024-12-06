@@ -4,7 +4,7 @@
 
 {% include  'mainapp/includes/leftbar.html' %}
 <h1 class = "h">Журнал</h1>
-<form method="get" enctype="multipart/form-data">
+<form method="get" enctype="multipart/form-data" class = "filter">
   {% csrf_token %}
   <div class="filter-grid">
     {% for f in form %}
@@ -16,7 +16,7 @@
     {% endfor %}
     <!--<div class="form-error">{{ form.non_field_errors }}</div>/!-->
             
-    <button type="submit">Фильтр</button>
+    <button type="submit" class = "main">Фильтр</button>
   </div>
 </form>
 
@@ -43,9 +43,9 @@
           <td>{{ entry.submission_date }}</td>
           <td>
             {% if entry.status == 'sended' %}
-              <span class="status success">✔️</span>
+              <span class="status success">✔</span>
             {% else %}
-              <span class="status fail">✖️</span>
+              <span class="status fail">✖</span>
             {% endif %}
           </td>
           <td>
@@ -55,13 +55,12 @@
             </select>
           </td>
           <td>
-            <button class="download-btn">⬇️</button>
+            <button class="download-btn">⬇</button>
           </td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
-  <button class="save-btn">Сохранить</button>
 </div>
 <script src="{% static 'mainapp/js/update_grade.js' %}"></script>
 {% endblock %}

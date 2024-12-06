@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 
 {% include  'mainapp/includes/leftbar.html' %}
+<script src="{% static 'mainapp/js/messages.js' %}"></script>
 
 <h1 class = "h">Детали профиля</h1>
 
@@ -14,7 +15,8 @@
     <div class="form-error">{{ f.errors }}</div>
     {% endfor %}    
 
-    <button type="submit" class="button">Сохранить</button>
+    <button type="submit" class="main">Сохранить</button>
+    
 </form>
 
 {% endblock %}
