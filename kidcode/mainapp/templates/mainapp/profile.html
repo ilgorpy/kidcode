@@ -1,7 +1,40 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 
 {% include  'mainapp/includes/leftbar.html' %}
+<script src="{% static 'mainapp/js/messages.js' %}"></script>
+
+<h1 class = "h">Детали профиля</h1>
+
+<form method="post"  enctype="multipart/form-data" class = "change">
+    {% csrf_token %}
+    <div class="form-error">{{ form.non_field_errors }}</div>
+    {% for f in form %}
+    <label class="password-label" for="{{ f.id_for_label }}">{{f.label}} </label>{{ f }}
+    <div class="form-error">{{ f.errors }}</div>
+    {% endfor %}    
+
+    <button type="submit" class="main">Сохранить</button>
+    
+</form>
+<div id="popup-message" class="popup hidden">
+    <p id="popup-text"></p>
+</div>
+
+<script type="application/json" id="messages-json">
+    [
+        {% for message in messages %}
+            "{{ message|escapejs }}"{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    ]
+</script>
+
+<script>
+    const messages = JSON.parse(document.getElementById('messages-json').textContent);
+    messages.forEach(message => {
+        showPopup(message);
+    });
+</script>
 
 {% endblock %}

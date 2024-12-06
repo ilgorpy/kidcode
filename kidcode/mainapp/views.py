@@ -1,11 +1,81 @@
-from django.http import HttpResponse
+from django.db import connection
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from users.models import User
+from django.contrib import messages
 from mainapp.models import *
+from django.db.models import Q
+from django.urls import reverse, reverse_lazy
+from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm, FieldsSettingsForm
+from django.views.generic import UpdateView, CreateView
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST, require_http_methods
+
+
+@login_required
+@require_POST
+def update_grade(request):
+    if 'grade_id' not in request.POST or 'new_grade' not in request.POST:
+        return JsonResponse({'error': 'grade_id and new_grade are required'}, status=400)
+
+    grade_id = request.POST.get('grade_id')
+    new_grade = request.POST.get('new_grade')
+
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute("UPDATE mainapp_grade SET grade = %s WHERE id = %s", [new_grade, grade_id])
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+        
+
+def record(request):
+    record_data = []
+    form = RecordForm(request.GET)
+    user_id = request.user.id
+    filters = Q(user_id=user_id)
+
+    if form.is_valid():
+        grade = form.cleaned_data.get('grade')
+        level = form.cleaned_data.get('level')
+
+        if grade:
+            filters &= Q(grade=grade)
+        if level:
+            filters &= Q(level=level)
+
+        record_data = list(RecordView.objects.filter(filters))
+
+    else:
+        record_data = list(RecordView.objects.filter(filters))
+    
+    return render(request, 'mainapp/record.html', {'record_data': record_data, 'form': form})
 
 
 def journal(request):
-    journal_data = list(JournalView.objects.all()) # используем кастомный менеджер
-    return render(request, 'mainapp/journal.html', {'journal_data': journal_data})
+    journal_data = []
+    form = JournalForm(request.GET)
+
+    if form.is_valid():
+        status = form.cleaned_data.get('status')
+        level = form.cleaned_data.get('level')
+        user_name = form.cleaned_data.get('name')
+
+        filters = Q()
+        if status:
+            filters &= Q(status=status)
+        if level:
+            filters &= Q(level=level)
+        if user_name:
+            filters &= Q(name__iexact=user_name)
+
+        journal_data = list(JournalView.objects.filter(filters))
+
+    else:
+        journal_data = list(JournalView.objects.all())
+        
+    return render(request, 'mainapp/journal.html', {'journal_data': journal_data, 'form': form})
    
 
 def index(request):
@@ -19,34 +89,25 @@ def constructor(request):
 def profile(request):
     return render(request, 'mainapp/profile.html')
 
+class UserPasswordChange(PasswordChangeView):
+    form_class = UserPasswordChangeForm
+    template_name = "mainapp/profile.html"
+    success_url = reverse_lazy("mainapp:profile")   
+    def form_valid(self, form):
+        messages.success(self.request, "Пароль успешно изменён!")
+        return super().form_valid(form)
 
-# def journal(request):
-#     data = {
-#         'name': [],
-#         'task_id': [],
-#         'level': [],
-#         'submission_date': [],
-#         'status': [],
-#         'grade': [],
-#         'code': [],
-#     }
-
-#     grades = Grade.objects.select_related('task', 'code', 'user')
-
-#     for grade in grades:
-#         data['name'].append(grade.user.name)
-#         data['task_id'].append(grade.task.id)
-#         data['level'].append(grade.task.level)
-#         data['submission_date'].append(grade.submission_date)
-#         data['status'].append(grade.status)
-#         data['grade'].append(grade.grade)
-#         data['code'].append(grade.code.code)
-
-#     return render(request, 'mainapp/journal.html')
+class UserNameChange(UpdateView):
+    form_class = UserNameChangeForm
+    success_url = reverse_lazy("mainapp:profile")
+    template_name = "mainapp/profile.html"
 
 
-def record(request):
-    return render(request, 'mainapp/record.html')
+class FieldsSettings(CreateView):
+    form_class = FieldsSettingsForm
+    success_url = reverse_lazy("mainapp:constructor")
+    template_name = "mainapp/constructor.html"
+    
 
 
 def task(request):

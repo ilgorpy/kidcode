@@ -5,7 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, Pass
 
 
 class LoginUserForm(AuthenticationForm):
-    password = forms.CharField(label="Пароль",
+    password = forms.CharField(label="Введите Пароль",
                     widget=forms.PasswordInput(attrs={'class': 'form-input'}))
 
     class Meta:

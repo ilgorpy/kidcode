@@ -1,15 +1,33 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 
 {% include  'mainapp/includes/leftbar.html' %}
+<h1 class = "h">Журнал</h1>
+<form method="get" enctype="multipart/form-data" class = "filter">
+  {% csrf_token %}
+  <div class="filter-grid">
+    {% for f in form %}
+      <div class="filter-group">
+        <label class="form-label" for="{{ f.id_for_label }}">{{ f.label }}</label>
+        {{ f }}
+       <!-- <div class="form-error">{{ f.errors }}</div>/!-->
+      </div>
+    {% endfor %}
+    <!--<div class="form-error">{{ form.non_field_errors }}</div>/!-->
+            
+    <button type="submit" class = "main">Фильтр</button>
+  </div>
+</form>
 
-<table>
+
+<div class="table-container">
+  <table class="journal-table">
     <thead>
       <tr>
-        <th>Имя</th>
-        <th>ID задачи</th>
-        <th>Уровень</th>
+        <th>ФИО</th>
+        <th>ID Уровня</th>
+        <th>Название уровня</th>
         <th>Дата сдачи</th>
         <th>Статус</th>
         <th>Оценка</th>
@@ -18,17 +36,31 @@
     </thead>
     <tbody>
       {% for entry in journal_data %}
-        <tr>
+        <tr data-grade-id="{{ entry.grade_id }}">  <!-- Добавлен data-grade-id -->
           <td>{{ entry.name }}</td>
           <td>{{ entry.task_id }}</td>
           <td>{{ entry.level }}</td>
           <td>{{ entry.submission_date }}</td>
-          <td>{{ entry.status }}</td>
-          <td>{{ entry.grade }}</td>
-          <td>{{ entry.code }}</td>
+          <td>
+            {% if entry.status == 'sended' %}
+              <span class="status success">✔</span>
+            {% else %}
+              <span class="status fail">✖</span>
+            {% endif %}
+          </td>
+          <td>
+            <select class="grade-select" data-grade-id="{{ entry.grade_id }}"> <!-- data-grade-id added here as well -->
+              <option value="pass" {% if entry.grade == 'pass' %}selected{% endif %}>Зачет</option>
+              <option value="fail" {% if entry.grade == 'fail' %}selected{% endif %}>Незачет</option>
+            </select>
+          </td>
+          <td>
+            <button class="download-btn">⬇</button>
+          </td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
-
+</div>
+<script src="{% static 'mainapp/js/update_grade.js' %}"></script>
 {% endblock %}

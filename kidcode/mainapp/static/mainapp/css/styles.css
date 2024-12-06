@@ -1,24 +1,38 @@
 .header {
     background: #4E4D4D;
-    height: 75px;
+    height: 76px;
+    width: 100%;
+    align-self: first baseline;
+    display: flex;
+    z-index: 10;
   }
 
-  .logo {
-    background: url('../images/logo.png') no-repeat 10px 5px;
-    width: 70px;
-    height: 60px;
+  ul, li {
+    list-style: none;
   }
-  
+
+  form.reg img{
+    width: 200px;
+    height: 200px;
+    margin-top: 30px;
+  }
+
+  a img{
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+  }
+
   body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: #292F31; /* Темный фон */
-    color: #ffffff; /* Белый текст */
+    background-color: #292F31; 
+    color: #ffffff; 
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Высота окна браузера */
+    height: 100vh; 
 }
 
 .form-grid {
@@ -30,9 +44,23 @@
   margin-right: 70px;
 }
 
+.form-grid_login {
+  display: flex;
+  flex-wrap: wrap; /* Позволяет перенос элементов */
+  gap: 20px; /* Расстояние между элементами */
+  justify-content: space-between; /* Равномерное распределение */
+  margin-left: 60px;
+  margin-right: 60px;
+}
+
 /* Поля */
 .form-group {
-  width: calc(50% - 10px); /* Половина ширины строки с отступом */
+  width: calc(50% - 25px); /* Половина ширины строки с отступом */
+  display: flex;
+  flex-direction: column; /* Вертикальное расположение */
+}
+
+.filter-group {
   display: flex;
   flex-direction: column; /* Вертикальное расположение */
 }
@@ -43,7 +71,8 @@
   margin-bottom: 5px; /* Отступ между текстом и полем */
   width: 150px;
   text-align: left;
-  
+  font-size: 16px;
+  white-space: nowrap;
 }
 
 /* Ошибки */
@@ -54,41 +83,44 @@
 }
 
 /* Контейнер формы */
-form {
+form.reg {
     background-color: #22231E; /* Темно-серый фон для формы */
-    padding: 40px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     text-align: center;
-    max-width: 700px; /* Максимальная ширина формы */
-    max-height: 800px;
+    width: 600px; /* Максимальная ширина формы */
+    height: 800px;
 }
+
 
 /* Заголовок */
 form h1 {
   font-family: monocraft;
     font-size: 30px;
     margin-bottom: 20px;
-    margin-top: 230px;
-    font-weight: bold;
+    margin-top: 20px;
 }
 
 /* Текст описания */
 form p {
     font-size: 18px;
     color: #aaaaaa;
-    margin-bottom: 30px;
+    
+}
+
+p{
+  white-space: nowrap;
 }
 
 /* Поля ввода */
 form input[type="email"],
 form input[type="text"],
 form input[type="password"] {
-    width: 200px;
+    width: calc(100%);
     height: 40px;
     padding: 10px;
     margin-bottom: 20px;
-    border: 1px solid #444;
+    border: 1px solid #adadad;
     border-radius: 4px;
     background-color: #333;
     color: #fff;
@@ -98,31 +130,32 @@ form input[type="password"] {
 }
 
 
+
 /* Кнопка регистрации */
-form button {
+  button.user {
     width: 560px;
     height: 50px;
     padding: 10px;
     border: none;
     border-radius: 4px;
-    background-color: #00c853; /* Ярко-зеленый цвет кнопки */
+    background-color: #0EA524; /* Ярко-зеленый цвет кнопки */
     color: #ffffff;
+    font-family: monocraft;
     font-size: 16px;
-    font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 /* Эффект наведения для кнопки */
 form button:hover {
-    background-color: #009624; /* Более темный зеленый при наведении */
+    background-color: #11ec44; /* Более темный зеленый при наведении */
 }
 
 /* Ссылка для входа */
 form a {
-    color: #00c853;
+    color: #0EA524;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 /* Эффект наведения для ссылки */
@@ -130,4 +163,348 @@ form a:hover {
     text-decoration: underline;
 }
 
+.url{
+  margin-top: -20px;
+}
+
+#id_username.form-input{
+  margin-left: 20px;
+}
+
+a.button {
+  width: 120px;
+  height: 50px;
+  border: none;
+  border-radius: 4px;
+  background-color: #0EA524; /* Ярко-зеленый цвет кнопки */
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-self: center;
+  text-decoration: none; 
+  display: flex; /* Используем Flexbox */
+  justify-content: center; /* Центровка по горизонтали */
+  align-items: center; /* Центровка по вертикали */
+}
+
+a.profile_btn{
+  height: 50px;
+  border: none;
+  margin-left: 30px;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-self: center;
+  text-decoration: none; 
+  display: flex; /* Используем Flexbox */
+  justify-content: left; /* Центровка по горизонтали */
+  align-items: center;
+  text-align: center;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+.button-grid{
+  margin-inline-start: calc(100% - 550px);
+  display: flex;
+  gap: 20px;
+  position: absolute;
+  right: 30px;
+  top: 13px;
+}
+
+a{
+  text-decoration: none;
+  color: #ffffff;
+  font-family: monocraft;
+}
+.sidebar-toggle {
+  background-color: #4E4D4D;
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  border: none;
+  font-size: 30px;
+  margin-left: 20px;
+}
+
+/* Сайдбар */
+#sidebar {
+  position: fixed;
+  top: 75px;  /* Выдвигаем сайдбар ниже шапки */
+  left: -250px; /* Начальная позиция скрытого сайдбара */
+  width: 250px;
+  height: 100%;
+  background-color: #22231E;
+  color: white;
+  transition: left 0.3s ease;
+  z-index: 5; /* Сайдбар будет под шапкой, но выше основного контента */
+  padding-top: 20px;
   
+}
+
+/* Ссылки в сайдбаре */
+.sidebar a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: white;
+  display: block;
+  transition: 0.3s;
+}
+
+p.logo_name{
+  font-family: monocraft;
+  font-size: 32px;
+  text-align: center;
+  margin-left: 10px;
+  display:flex;
+  justify-content: left;
+}
+
+.sidebar a:hover {
+  color: #f1f1f1;
+}
+
+#sidebar.active {
+  left: 0;  /* Сайдбар будет выдвигаться на экран */
+}
+
+/* Когда сайдбар открыт */
+.sidebar.open {
+  width: 250px;
+}
+
+/* Контент смещается, когда сайдбар открыт */
+body.sidebar-open {
+  margin-left: 250px;
+}
+
+.content-text{
+  justify-content: space-between;
+  position: absolute;
+  top: 75px;
+  left: 0px;
+  background-color: #333;
+  height: 100%;
+  width: 500px;
+}
+
+.content-text h1{
+  font-size: 16px;
+  font-family: monocraft;
+  margin-bottom: 0px;
+  margin-left: 30px;
+}
+
+.last{
+  margin-top: 3px;
+  margin-bottom: 30px;
+  font-weight: bold;
+  margin-left: 30px;
+}
+
+.filter-grid{
+  position:absolute;
+  left: 35%;
+  top: 200px;
+  display: flex; 
+  gap: 50px; /* Расстояние между элементами */
+  justify-content: space-between;
+  margin-top: 50px;
+}
+
+
+.table-container{
+  position: absolute;
+}
+
+#id_name.form-input, #id_level.form-input, #id_status, #id_grade{
+  width: 200px;
+  height: 40px;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #adadad;
+  border-radius: 4px;
+  background-color: #333;
+  color: #fff;
+  outline: none;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+button.main{
+  width: 120px;
+  height: 50px;
+  padding: 10px;
+  align-self: center;
+  border: none;
+  border-radius: 4px;
+  background-color: #0EA524; /* Ярко-зеленый цвет кнопки */
+  color: #ffffff;
+  font-family: monocraft;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+h1.h{
+  font-family: monocraft;
+  position: absolute;
+  left: 57.5%;
+  top: 105px;
+  font-size: 48px;
+}
+
+.table-container {
+  position: absolute;
+  top: 450px;
+  left:35%;
+  width: 50%;
+  margin: 20px auto;
+  overflow-x: auto;
+  background-color: #22231E;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.journal-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.journal-table thead {
+  background-color: #2c2f33;
+  color: #ffffff;
+}
+
+.journal-table th,
+.journal-table td {
+  padding: 10px 15px;
+  border: 1px solid #ffffff;
+  background-color: #22231E;
+}
+
+.journal-table tr:nth-child(even) {
+  background-color: #22231E;
+}
+
+.journal-table tr:nth-child(odd) {
+  background-color: #23272a;
+}
+
+.journal-table th {
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.status {
+  display: inline-block;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.status.success {
+  color: #0ea524;
+}
+
+.status.fail {
+  color: #ff0000;
+}
+
+.grade-select {
+  background-color: #2c2f33;
+  color: #ffffff;
+  border: 1px solid #444;
+  padding: 5px 10px;
+  border-radius: 5px;
+  width: 150px;
+}
+
+.grade-select option {
+  background-color: #23272a;
+  color: #ffffff;
+}
+
+.download-btn {
+  background-color: transparent;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  color: #ffffff;
+}
+
+.download-btn:hover {
+  color: #0ea524;
+}
+
+form.change{
+  height: 500px;
+  width: 750px;
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  background-color: #22231E; /* Темно-серый фон для формы */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  padding: 50px;
+  
+}
+
+.password-label{
+  text-align: start;
+  margin-bottom: 10px;
+  display: flex;
+}
+
+/* Скрытие окна */
+.hidden {
+  display: none;
+}
+
+/* Фон всплывающего окна */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  z-index: 1000;
+  padding: 20px;
+  text-align: center;
+  width: 300px;
+}
+
+/* Затемнение фона */
+.popup::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+
+/* Кнопка закрытия */
+.popup button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popup button:hover {
+  background-color: #45a049;
+}

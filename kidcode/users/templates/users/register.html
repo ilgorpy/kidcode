@@ -8,13 +8,15 @@
     <link type="text/css" href="{% static 'mainapp/css/styles.css' %}" rel="stylesheet" />
 </head>
 <body>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" class = "reg">
         {% csrf_token %}
+        <img src="{% static 'mainapp/images/pixel-last.png' %}" alt="logo" class = "logo">
         <h1>Зарегистрироваться</h1>
-        <p>Какой-то текст Какой-то текст Какой-то текст Какой-то текст</p>
+        
         
         <!-- Контейнер для полей формы -->
         <div class="form-grid">
+            <p>Какой-то текст Какой-то текст Какой-то текст Какой-то текст</p>
             {% for f in form %}
             <div class="form-group">
                 <label class="form-label" for="{{ f.id_for_label }}">{{ f.label }}</label>
@@ -22,16 +24,20 @@
                 <div class="form-error">{{ f.errors }}</div>
             </div>
             {% endfor %}
+            <!-- Ссылка на вход -->
+        
+            <button type="submit" class="user">Зарегистрироваться</button>
+            <div class = "url"> <p>Уже есть аккаунт? <a href="{% url 'users:login' %}">Войти</a></p>  </div>
         </div>
         
         <!-- Ошибки всей формы -->
         <div class="form-error">{{ form.non_field_errors }}</div>
         
         <!-- Кнопка отправки -->
-        <button type="submit">Регистрация</button>
+        
         
         <!-- Ссылка на вход -->
-        <p>Уже есть аккаунт? <a href="{% url 'users:login' %}">Войти</a></p>  
+        
     </form>
 </body>
 </html>
