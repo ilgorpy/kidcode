@@ -5,6 +5,7 @@ class Task(models.Model):
     level = models.CharField(max_length=100)
     chapter = models.CharField(max_length=100)
     clue = models.TextField()
+    text_exercise = models.TextField(blank=True, null=True)
     difficult = models.CharField(max_length=6, choices=[('easy', 'Легкий'), ('medium', 'Средний'), ('hard', 'Сложный')])
     gamefield = models.ForeignKey('GameField', on_delete=models.CASCADE)
 

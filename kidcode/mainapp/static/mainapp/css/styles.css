@@ -256,6 +256,15 @@ a{
   transition: 0.3s;
 }
 
+p.logo_name{
+  font-family: monocraft;
+  font-size: 32px;
+  text-align: center;
+  margin-left: 10px;
+  display:flex;
+  justify-content: left;
+}
+
 .sidebar a:hover {
   color: #f1f1f1;
 }
@@ -453,4 +462,49 @@ form.change{
   display: flex;
 }
 
+/* Скрытие окна */
+.hidden {
+  display: none;
+}
 
+/* Фон всплывающего окна */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  z-index: 1000;
+  padding: 20px;
+  text-align: center;
+  width: 300px;
+}
+
+/* Затемнение фона */
+.popup::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+
+/* Кнопка закрытия */
+.popup button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popup button:hover {
+  background-color: #45a049;
+}

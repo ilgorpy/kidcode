@@ -6,8 +6,8 @@ from django.contrib import messages
 from mainapp.models import *
 from django.db.models import Q
 from django.urls import reverse, reverse_lazy
-from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm
-from django.views.generic import UpdateView
+from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm, FieldsSettingsForm
+from django.views.generic import UpdateView, CreateView
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_http_methods
@@ -92,7 +92,7 @@ def profile(request):
 class UserPasswordChange(PasswordChangeView):
     form_class = UserPasswordChangeForm
     template_name = "mainapp/profile.html"
-    success_url = reverse_lazy("users:password_change_done")
+    success_url = reverse_lazy("mainapp:profile")   
     def form_valid(self, form):
         messages.success(self.request, "Пароль успешно изменён!")
         return super().form_valid(form)
@@ -101,6 +101,12 @@ class UserNameChange(UpdateView):
     form_class = UserNameChangeForm
     success_url = reverse_lazy("mainapp:profile")
     template_name = "mainapp/profile.html"
+
+
+class FieldsSettings(CreateView):
+    form_class = FieldsSettingsForm
+    success_url = reverse_lazy("mainapp:constructor")
+    template_name = "mainapp/constructor.html"
     
 
 

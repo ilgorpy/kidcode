@@ -4,6 +4,10 @@ function showPopup(message) {
 
     text.textContent = message;  // Устанавливаем текст сообщения
     popup.classList.remove('hidden');  // Показываем окно
+
+    setTimeout(() => {
+        popup.classList.add('hidden');  // Скрываем окно через 3 секунды();
+    }, 3500);
 }
 
 function closePopup() {

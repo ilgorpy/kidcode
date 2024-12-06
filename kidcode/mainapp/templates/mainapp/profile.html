@@ -18,5 +18,23 @@
     <button type="submit" class="main">Сохранить</button>
     
 </form>
+<div id="popup-message" class="popup hidden">
+    <p id="popup-text"></p>
+</div>
+
+<script type="application/json" id="messages-json">
+    [
+        {% for message in messages %}
+            "{{ message|escapejs }}"{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    ]
+</script>
+
+<script>
+    const messages = JSON.parse(document.getElementById('messages-json').textContent);
+    messages.forEach(message => {
+        showPopup(message);
+    });
+</script>
 
 {% endblock %}

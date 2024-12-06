@@ -21,7 +21,7 @@
                         </ul>
                     </div>
                     <a href="{% url 'users:login'%}"><img src="{% static 'mainapp/images/pixel-last.png' %}" alt="logo" class = "logo"></a>
-                    <p>Я не знаю что тут написать</p>
+                    <p class = "logo_name">KidCode</p>
                     <div class =  "button-grid">
                     {% if user.is_staff %}
                             {% for item in menu %}
