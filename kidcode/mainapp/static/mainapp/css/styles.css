@@ -508,3 +508,20 @@ form.change{
 .popup button:hover {
   background-color: #45a049;
 }
+
+form.settings{
+  height: 100%;
+  position: absolute;
+  left: 0px;
+  top: 75px;
+  background-color: #22231E;
+  width: 30%;
+}
+
+form.settings h1{
+  font-family: monocraft;
+    font-size: 24px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    text-align: center;
+}

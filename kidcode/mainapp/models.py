@@ -1,6 +1,8 @@
 from django.db import models
+import uuid
 
 class Task(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     deadline = models.DateField()
     level = models.CharField(max_length=100)
     chapter = models.CharField(max_length=100)
@@ -34,6 +36,7 @@ class Code(models.Model):
 
 
 class GameField(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     width = models.IntegerField()
     height = models.IntegerField()
     cube = models.IntegerField()
