@@ -6,7 +6,7 @@ from django.contrib import messages
 from mainapp.models import *
 from django.db.models import Q
 from django.urls import reverse, reverse_lazy
-from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm, FieldsSettingsForm
+from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm, FieldsSettingsForm, TaskTextForm
 from django.views.generic import UpdateView, CreateView, TemplateView
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.decorators import login_required
@@ -107,10 +107,30 @@ class UserNameChange(UpdateView):
     template_name = "mainapp/profile.html"
 
 
-class FieldsSettings(RoleRequiredMixin, CreateView):
-    form_class = FieldsSettingsForm
-    success_url = reverse_lazy("mainapp:constructor")
-    template_name = "mainapp/constructor.html"
+class FieldsSettings(CreateView):
+    template_name = 'mainapp/constructor.html'
+    def get(self, request, *args, **kwargs):
+        fields_form = FieldsSettingsForm()
+        task_form = TaskTextForm()
+        return render(request, self.template_name, {
+            'fields_form': fields_form,
+            'task_form': task_form
+        })
+
+    def post(self, request, *args, **kwargs):
+        fields_form = FieldsSettingsForm(request.POST)
+        task_form = TaskTextForm(request.POST)
+
+        if fields_form.is_valid() and task_form.is_valid():
+            fields_form.save()
+            task_form.save()
+            messages.success(self.request, "Уровень успешно создан!")  # Замените на ваш URL после успешного сохранения
+        else:
+            # Если есть ошибки, вернем формы с сообщениями об ошибках
+            return render(request, self.template_name, {
+                'fields_form': fields_form,
+                'task_form': task_form
+            })
     
 
 
