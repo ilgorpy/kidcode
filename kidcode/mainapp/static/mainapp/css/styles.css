@@ -539,7 +539,7 @@ form.settings{
   left: 0px;
   top: 75px;
   background-color: #22231E;
-  width: 25%;
+  width: 400px;
 }
 
 form.settings h1{
@@ -589,3 +589,11 @@ form.settings h1{
   box-sizing: border-box;
   font-size: 14px;
  }
+
+ #gameCanvas {
+  border: 3px solid #ccc;
+  background: transparent;
+  position: absolute;
+  left: calc(400px + 35%);
+  right: 20%;
+}
