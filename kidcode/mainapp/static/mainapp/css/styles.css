@@ -565,7 +565,7 @@ form.settings h1{
   margin-bottom: 10px;
 }
 
-#id_width.form-input, #id_height.form-input, #id_holes.form-input, #id_cubes.form-input, #id_blocks.form-input{
+#id_width.form-input, #id_height.form-input, #id_hole.form-input, #id_cube.form-input, #id_block.form-input{
   width: 230px;
   height: 30px;
   padding: 10px;
