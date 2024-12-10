@@ -43,7 +43,7 @@ class TaskTextForm(forms.ModelForm):
             'difficult': 'Сложность',
             'chapter': "Глава",
             'level': "Уровень",
-            'text_exercise': "Текст упражнения",
+            'text_exercise': "Текст задания",
             'clue': "Подсказка",
             'deadline': "Дедлайн",
         }
