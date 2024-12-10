@@ -1,16 +1,17 @@
 from django.db import connection
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from users.models import User
 from django.contrib import messages
 from mainapp.models import *
 from django.db.models import Q
 from django.urls import reverse, reverse_lazy
-from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm, FieldsSettingsForm
-from django.views.generic import UpdateView, CreateView
+from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm, FieldsSettingsForm, TaskTextForm
+from django.views.generic import UpdateView, CreateView, TemplateView
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_http_methods
+from mainapp.mixins import RoleRequiredMixin
 
 
 @login_required
@@ -52,30 +53,33 @@ def record(request):
     
     return render(request, 'mainapp/record.html', {'record_data': record_data, 'form': form})
 
+class Journal(RoleRequiredMixin, TemplateView):
+    form_class = JournalForm
+    template_name = 'mainapp/journal.html'
+    success_url = reverse_lazy("mainapp:journal")
+    def get(self, request):
+        journal_data = []
+        form = JournalForm(request.GET)
 
-def journal(request):
-    journal_data = []
-    form = JournalForm(request.GET)
+        if form.is_valid():
+            status = form.cleaned_data.get('status')
+            level = form.cleaned_data.get('level')
+            user_name = form.cleaned_data.get('name')
 
-    if form.is_valid():
-        status = form.cleaned_data.get('status')
-        level = form.cleaned_data.get('level')
-        user_name = form.cleaned_data.get('name')
+            filters = Q()
+            if status:
+                filters &= Q(status=status)
+            if level:
+                filters &= Q(level=level)
+            if user_name:
+                filters &= Q(name__iexact=user_name)
 
-        filters = Q()
-        if status:
-            filters &= Q(status=status)
-        if level:
-            filters &= Q(level=level)
-        if user_name:
-            filters &= Q(name__iexact=user_name)
+            journal_data = list(JournalView.objects.filter(filters))
 
-        journal_data = list(JournalView.objects.filter(filters))
-
-    else:
-        journal_data = list(JournalView.objects.all())
+        else:
+            journal_data = list(JournalView.objects.all())
         
-    return render(request, 'mainapp/journal.html', {'journal_data': journal_data, 'form': form})
+        return render(request,'mainapp/journal.html', {'journal_data': journal_data, 'form': form})
    
 
 def index(request):
@@ -104,9 +108,35 @@ class UserNameChange(UpdateView):
 
 
 class FieldsSettings(CreateView):
-    form_class = FieldsSettingsForm
-    success_url = reverse_lazy("mainapp:constructor")
-    template_name = "mainapp/constructor.html"
+    template_name = 'mainapp/constructor.html'
+    model = Task
+    fields = []
+
+    def get(self, request, *args, **kwargs):
+        fields_form = FieldsSettingsForm()
+        task_form = TaskTextForm()
+        return render(request, self.template_name, {
+            'fields_form': fields_form,
+            'task_form': task_form
+        })
+
+    def post(self, request, *args, **kwargs):
+        fields_form = FieldsSettingsForm(request.POST)
+        task_form = TaskTextForm(request.POST)
+
+        if fields_form.is_valid() and task_form.is_valid():
+            game_field = fields_form.save()  
+            task_data = task_form.cleaned_data  
+            task_data['gamefield'] = game_field  
+            task = Task.objects.create(**task_data) 
+            messages.success(self.request, "Уровень успешно создан!")  
+            return redirect('mainapp:constructor')
+        else:
+            # Если есть ошибки, вернем формы с сообщениями об ошибках
+            return render(request, self.template_name, {
+                'fields_form': fields_form,
+                'task_form': task_form
+            })
     
 
 

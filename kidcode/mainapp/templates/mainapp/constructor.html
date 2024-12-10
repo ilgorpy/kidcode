@@ -2,18 +2,39 @@
 
 
 {% block content %}
-
-<form method="post">
+<form method="post", class="settings">
+    <h1>Конструктор игрового поля</h1>
     {% csrf_token %}
-    {% for field in form %}
-        <div>
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-        </div>
-        <div class="error">{{ field.errors }}</div>
+
+    <!-- Поля формы FieldsSettingsForm -->
+    <h2 class = "h2-settings">Параметры игрового поля</h2>
+    {% for field in fields_form %}
+        <label class="label-settings" for="{{ field.id_for_label }}">{{ field.label }}</label><br>
+        {{ field }}<br>
+        {% if field.errors %}
+            <div style="color: red;">
+                {{ field.errors }}
+            </div>
+        {% endif %}
     {% endfor %}
-    <button type="submit">Сохранить</button>
+    <hr>
+
+    <!-- Поля формы TaskText -->
+    <h2 class = "h2-settings">Текст задания</h2>
+    {% for field in task_form %}
+        <label class="label-settings" for="{{ field.id_for_label }}">{{ field.label }}</label><br>
+        {{ field }}<br>
+        {% if field.errors %}
+            <div style="color: red;">
+                {{ field.errors }}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <!-- Кнопка для сохранения обеих форм -->
+     <div class = "buttons">
+    <button type="submit" class="main">Сохранить</button>
 </form>
 
-
+    
 {% endblock %}

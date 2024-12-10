@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from mainapp.models import GameField, Grade, Code
+from mainapp.models import GameField, Grade, Code, Task
 from django.contrib.auth.forms import SetPasswordForm
 
 
@@ -23,18 +23,36 @@ class UserPasswordChangeForm(SetPasswordForm):
 
 
 class FieldsSettingsForm(forms.ModelForm):
-    width = forms.IntegerField(label="Ширина", widget = forms.NumberInput(attrs={'class': 'form-input'}))
-    height = forms.IntegerField(label="Высота", widget = forms.NumberInput(attrs={'class': 'form-input'}))
-    cubes = forms.IntegerField(label="Количество кубиков", widget = forms.NumberInput(attrs={'class': 'form-input'}))
-    holes = forms.IntegerField(label="Количество лунок", widget = forms.NumberInput(attrs={'class': 'form-input'}))
-    blocks = forms.IntegerField(label="Количество занятых клеток", widget = forms.NumberInput(attrs={'class': 'form-input'}))
-    # difficult = forms.ChoiceField(choices=Task.difficult, label="Сложность", widget=forms.Select)
-    # chapter = forms.CharField(label="Глава", widget=forms.TextInput(attrs={'class': 'form-input'}))
-    # level = forms.CharField(label="Уровень", widget = forms.TextInput(attrs={'class': 'form-input'}))
-    # text_exercise = forms.CharField(label="Текст упражнения", widget = forms.Textarea(attrs={'class': 'form-input'}))
-    # clue = forms.CharField(label="Подсказка", widget = forms.Textarea(attrs={'class': 'form-input'}))
-    # deadline = forms.DateField(label="Дедлайн", widget = forms.DateInput(attrs={'class': 'form-input'}))
-
+    width = forms.IntegerField(label="Ширина", widget=forms.NumberInput(attrs={'class': 'form-input'}), required=True)
+    height = forms.IntegerField(label="Высота", widget=forms.NumberInput(attrs={'class': 'form-input'}), required=True)
+    cube = forms.IntegerField(label="Количество кубиков", widget=forms.NumberInput(attrs={'class': 'form-input'}), required=True)
+    hole = forms.IntegerField(label="Количество лунок", widget=forms.NumberInput(attrs={'class': 'form-input'}), required=True)
+    block = forms.IntegerField(label="Количество занятых клеток", widget=forms.NumberInput(attrs={'class': 'form-input'}), required=True)
+    
     class Meta:
         model = GameField
-        fields = ['width', 'height', 'cubes', 'holes', 'blocks']
+        fields = ['width', 'height', 'cube', 'hole', 'block']
+    
+    
+    
+class TaskTextForm(forms.ModelForm):
+      class Meta:
+        model = Task
+        fields = ['difficult', 'chapter', 'level', 'text_exercise', 'clue', 'deadline']
+        labels = {
+            'difficult': 'Сложность',
+            'chapter': "Глава",
+            'level': "Уровень",
+            'text_exercise': "Текст задания",
+            'clue': "Подсказка",
+            'deadline': "Дедлайн",
+        }
+        widgets = {
+            'difficult': forms.Select(attrs={'class': 'form-input'}),
+            'chapter': forms.TextInput(attrs={'class': 'form-input'}),  
+            'level': forms.TextInput(attrs={'class': 'form-input'}),
+            'text_exercise': forms.Textarea(attrs={'class': 'form-input'}),
+            'clue': forms.Textarea(attrs={'class': 'form-input'}),
+            'deadline': forms.DateInput(attrs={'class': 'form-input', 'type': 'date'}),
+        }
+    

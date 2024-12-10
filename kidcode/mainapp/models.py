@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 class Task(models.Model):
     deadline = models.DateField()
@@ -39,6 +40,7 @@ class GameField(models.Model):
     cube = models.IntegerField()
     hole = models.IntegerField()
     block = models.IntegerField()
+    json_field = models.JSONField()
 
 
 class JournalViewManager(models.Manager):

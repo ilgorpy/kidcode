@@ -151,6 +151,7 @@ form button:hover {
     background-color: #11ec44; /* Более темный зеленый при наведении */
 }
 
+
 /* Ссылка для входа */
 form a {
     color: #0EA524;
@@ -351,6 +352,26 @@ button.main{
   transition: background-color 0.3s ease;
 }
 
+button.reset{
+  width: 120px;
+  height: 50px;
+  padding: 10px;
+  padding-left: 10px;
+  align-self: center;
+  border: 2px solid #A62714;
+  border-radius: 4px;
+  background: transparent; 
+  color: #A62714;
+  font-family: monocraft;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.buttons{
+  margin-top: 30px;
+}
+
 h1.h{
   font-family: monocraft;
   position: absolute;
@@ -507,4 +528,53 @@ form.change{
 
 .popup button:hover {
   background-color: #45a049;
+}
+
+form.settings{
+  padding-top: 20px;
+  padding-left: 40px; 
+  padding-right: 40px; 
+  height: 100%;
+  position: absolute;
+  left: 0px;
+  top: 75px;
+  background-color: #22231E;
+  width: 25%;
+}
+
+form.settings h1{
+  font-family: monocraft;
+    font-size: 24px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.h2-settings{
+  font-family: monocraft;
+    font-size: 20px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    text-align: left;
+}
+
+.label-settings{
+  font-family: monocraft;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+#id_width.form-input, #id_height.form-input, #id_holes.form-input, #id_cubes.form-input, #id_blocks.form-input{
+  width: 230px;
+  height: 30px;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #adadad;
+  border-radius: 4px;
+  background-color: #333;
+  color: #fff;
+  outline: none;
+  box-sizing: border-box;
+  font-size: 14px;
 }
