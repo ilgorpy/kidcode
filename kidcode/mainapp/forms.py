@@ -23,15 +23,15 @@ class UserPasswordChangeForm(SetPasswordForm):
 
 
 class FieldsSettingsForm(forms.ModelForm):
-    width = forms.IntegerField(label="Ширина", widget=forms.NumberInput(attrs={'class': 'form-input'}))
-    height = forms.IntegerField(label="Высота", widget=forms.NumberInput(attrs={'class': 'form-input'}))
-    cubes = forms.IntegerField(label="Количество кубиков", widget=forms.NumberInput(attrs={'class': 'form-input'}))
-    holes = forms.IntegerField(label="Количество лунок", widget=forms.NumberInput(attrs={'class': 'form-input'}))
-    blocks = forms.IntegerField(label="Количество занятых клеток", widget=forms.NumberInput(attrs={'class': 'form-input'}))
+    width = forms.IntegerField(label="Ширина", widget=forms.NumberInput(attrs={'class': 'form-input'}), required=True)
+    height = forms.IntegerField(label="Высота", widget=forms.NumberInput(attrs={'class': 'form-input'}), required=True)
+    cube = forms.IntegerField(label="Количество кубиков", widget=forms.NumberInput(attrs={'class': 'form-input'}), required=True)
+    hole = forms.IntegerField(label="Количество лунок", widget=forms.NumberInput(attrs={'class': 'form-input'}), required=True)
+    block = forms.IntegerField(label="Количество занятых клеток", widget=forms.NumberInput(attrs={'class': 'form-input'}), required=True)
     
     class Meta:
         model = GameField
-        fields = ['width', 'height', 'cubes', 'holes', 'blocks']
+        fields = ['width', 'height', 'cube', 'hole', 'block']
     
     
     

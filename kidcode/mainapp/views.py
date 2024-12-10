@@ -1,6 +1,6 @@
 from django.db import connection
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from users.models import User
 from django.contrib import messages
 from mainapp.models import *
@@ -109,6 +109,9 @@ class UserNameChange(UpdateView):
 
 class FieldsSettings(CreateView):
     template_name = 'mainapp/constructor.html'
+    model = Task
+    fields = []
+
     def get(self, request, *args, **kwargs):
         fields_form = FieldsSettingsForm()
         task_form = TaskTextForm()
@@ -122,9 +125,12 @@ class FieldsSettings(CreateView):
         task_form = TaskTextForm(request.POST)
 
         if fields_form.is_valid() and task_form.is_valid():
-            fields_form.save()
-            task_form.save()
-            messages.success(self.request, "Уровень успешно создан!")  # Замените на ваш URL после успешного сохранения
+            game_field = fields_form.save()  
+            task_data = task_form.cleaned_data  
+            task_data['gamefield'] = game_field  
+            task = Task.objects.create(**task_data) 
+            messages.success(self.request, "Уровень успешно создан!")  
+            return redirect('mainapp:constructor')
         else:
             # Если есть ошибки, вернем формы с сообщениями об ошибках
             return render(request, self.template_name, {
