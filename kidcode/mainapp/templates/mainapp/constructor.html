@@ -7,7 +7,7 @@
     {% csrf_token %}
 
     <!-- Поля формы FieldsSettingsForm -->
-    <h2 class = "h2-settings">Настройки поля</h2>
+    <h2 class = "h2-settings">Параметры игрового поля</h2>
     {% for field in fields_form %}
         <label class="label-settings" for="{{ field.id_for_label }}">{{ field.label }}</label><br>
         {{ field }}<br>
@@ -17,9 +17,10 @@
             </div>
         {% endif %}
     {% endfor %}
+    <hr>
 
     <!-- Поля формы TaskText -->
-    <h2>Настройки задания</h2>
+    <h2 class = "h2-settings">Текст задания</h2>
     {% for field in task_form %}
         <label class="label-settings" for="{{ field.id_for_label }}">{{ field.label }}</label><br>
         {{ field }}<br>
@@ -31,9 +32,8 @@
     {% endfor %}
 
     <!-- Кнопка для сохранения обеих форм -->
+     <div class = "buttons">
     <button type="submit" class="main">Сохранить</button>
-
-    
 </form>
 
     
