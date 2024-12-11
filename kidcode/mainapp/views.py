@@ -7,7 +7,7 @@ from mainapp.models import *
 from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm, FieldsSettingsForm, TaskTextForm
-from django.views.generic import UpdateView, CreateView, TemplateView
+from django.views.generic import UpdateView, CreateView, TemplateView, View
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_http_methods
@@ -110,8 +110,8 @@ class UserNameChange(UpdateView):
     success_url = reverse_lazy("mainapp:profile")
     template_name = "mainapp/profile.html"
 
-@method_decorator(csrf_exempt, name='dispatch')
-class FieldsSettings(CreateView):
+
+class FieldsSettings(View):
     template_name = 'mainapp/constructor.html'
     model = Task
     fields = []
@@ -125,61 +125,57 @@ class FieldsSettings(CreateView):
         })
 
     def post(self, request, *args, **kwargs):
-        # Проверяем тип запроса: обычная форма или JSON-данные
-        # if request.content_type == 'application/json':
-        #     try:
-        #         # Обработка JSON-данных
-        #         data = json.loads(request.body)
-        #         print('Полученные данные:', data)
-        #         game_field_data = data.get('game_field')  # Данные игрового поля
-        #         task_data = data.get('task')  # Данные задачи
+        # Получаем данные из тела запроса
 
-        #         # Проверка наличия данных
-        #         if not game_field_data or not task_data:
-        #             return JsonResponse({'status': 'error', 'message': 'Некорректные данные'}, status=400)
-
-        #         # Сохраняем игровое поле
-        #         game_field = GameField.objects.create(data=game_field_data)
-
-        #         # Сохраняем задачу, связанную с игровым полем
-        #         task = Task.objects.create(
-        #             title=task_data.get('title'),
-        #             description=task_data.get('description'),
-        #             gamefield=game_field  # Связываем с игровым полем
-        #         )
-
-        #         return JsonResponse({'status': 'success', 'message': 'Уровень успешно сохранён!'})
-
-        #     except Exception as e:
-        #         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-
-        # Обработка формы, если данные не в JSON
+        
 
         try:
+            if not request.body:  # Проверка на пустое тело
+                return JsonResponse({'status': 'error', 'message': 'Empty request body'}, status=400)
             data = json.loads(request.body)
-            print('Полученные данные', data)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Невалидный JSON в запросе'}, status=400)
 
-        fields_form = FieldsSettingsForm(request.POST)
-        task_form = TaskTextForm(request.POST)
 
-        if fields_form.is_valid() and task_form.is_valid():
-            data = json.loads(request.body)
-            print('Полученные данные', data)
-            game_field = fields_form.save()  
-            task_data = task_form.cleaned_data
-            print('Я тут вызываюсь')  
-            task_data['gamefield'] = game_field  
-            task = Task.objects.create(**task_data) 
-            messages.success(self.request, "Уровень успешно создан!")  
-            return redirect('mainapp:constructor')
-        else:
-            # Если есть ошибки, вернем формы с сообщениями об ошибках
-            return render(request, self.template_name, {
-                'fields_form': fields_form,
-                'task_form': task_form
-            })
+            # Данные для GameField
+            width = data.get('width')
+            height = data.get('height')
+            cube = data.get('cube')
+            hole = data.get('hole')
+            block = data.get('block')
+            icon_position = data.get('iconPosition')  # Позиция иконки котика в формате JSON
+
+            # Создание GameField
+            gamefield = GameField.objects.create(
+                width=width,
+                height=height,
+                cube=cube,
+                hole=hole,
+                block=block,
+                data=icon_position
+            )
+
+            # Данные для Task
+            deadline = data.get('deadline')
+            level = data.get('level')
+            chapter = data.get('chapter')
+            clue = data.get('clue')
+            text_exercise = data.get('text_exercise')
+            difficult = data.get('difficult')
+
+            # Создание Task
+            task = Task.objects.create(
+                deadline=deadline,
+                level=level,
+                chapter=chapter,
+                clue=clue,
+                text_exercise=text_exercise,
+                difficult=difficult,
+                gamefield=gamefield
+            )
+
+            return JsonResponse({'status': 'success', 'task_id': task.id}, status=201)
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     
 
 

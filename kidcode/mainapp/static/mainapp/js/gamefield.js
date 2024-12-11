@@ -13,8 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let offsetX = 0; // Смещение для корректного размещения
     let offsetY = 0;
 
-    document.getElementById('saveButton').addEventListener('click', saveGameField); // Кнопка save для поля
-
     const placedObjects = []; // Массив для хранения размещённых объектов
 
 
@@ -88,7 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
             currentTemplate = {
                 image: new Image(),
                 x: 0,
-                y: 0
+                y: 0,
+                id: template.id
             };
             currentTemplate.image.src = template.src;
             offsetX = e.clientX - rect.left;
@@ -146,7 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
             placedObjects.push({
                 image: currentTemplate.image,
                 x: currentTemplate.x,
-                y: currentTemplate.y
+                y: currentTemplate.y,
+                id: currentTemplate.id
             });
 
             currentTemplate = null;
@@ -161,35 +161,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     drawGrid();
 
-    function saveGameField() {
-        console.log('Placed Objects:', placedObjects);
-        const placedObjectsJSON = JSON.stringify(placedObjects); // Преобразуем в JSON
-        const taskData = {
-            title: document.getElementById('taskTitle').value,
-            description: document.getElementById('taskDescription').value
-        };
-        console.log("Отправляемые данные:", { game_field: placedObjectsJSON, task: taskData });
-    
+
+    const saveButton = document.getElementById('saveButton');
+    const form = document.querySelector('form.settings');
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault(); // Отключаем стандартное поведение формы
+
+        // Собираем данные из формы
+        const formData = new FormData(form);
+        const jsonData = {};
+        formData.forEach((value, key) => {
+            jsonData[key] = value;
+        });
+
+        // Добавляем дополнительные данные (например, координаты из canvas)
+        jsonData.iconPosition = placedObjects; // Это пример, замените на реальные координаты
+
+        // Отправляем данные через fetch
         fetch('/constructor/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken()
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken') // Передаём CSRF токен
             },
-            body: JSON.stringify({
-                game_field: placedObjectsJSON,
-                task: taskData
+            body: JSON.stringify(jsonData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                alert('Сохранение прошло успешно!');
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Response:', data);
-            if (data.status === 'success') {
-                alert('Поле успешно сохранено!');
-            } else {
-                alert('Ошибка: ' + data.message);
-            }
-        })
-        .catch(error => console.error('Ошибка:', error));
-    }
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при сохранении.');
+            });
+    });
+
+    
 });
+
