@@ -21,7 +21,11 @@
     {% endfor %}
     <hr>
 
-  
+    <div id="templates">
+        <img src="{% static 'mainapp/images/pixel-last.png' %}" class="template" draggable="true" id="template1">
+        <img src="{% static 'mainapp/images/pixel-last.png' %}" class="template" draggable="true" id="template2">
+      </div>
+      <hr>
     <h2 class = "h2-settings">Текст задания</h2>
     {% for field in task_form %}
         <label class="label-settings" for="{{ field.id_for_label }}">{{ field.label }}</label><br>
@@ -35,7 +39,7 @@
 
     
     <div class = "buttons">
-        <button type="submit" class="main">Сохранить</button>
+        <button id="saveButton" type="submit" class="main">Сохранить</button>
         <button type="reset" class = "reset">Очистить</button>
         </div>
 </form>

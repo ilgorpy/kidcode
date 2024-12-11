@@ -596,4 +596,16 @@ form.settings h1{
   position: absolute;
   left: calc(400px + 35%);
   right: 20%;
+  
+}
+
+#templates {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.template {
+  width: 40px;
+  height: 40px;
+  cursor: grab;
 }

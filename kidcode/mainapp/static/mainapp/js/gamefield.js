@@ -3,36 +3,48 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
     const cellSize = 60; 
     let gridWidth = document.getElementById('id_width');
-    let gridHeight = document.getElementById('id_height');
-
+    let gridHeight = document.getElementById('id_height')
     canvas.width = gridWidth * cellSize;
     canvas.width = gridWidth * cellSize;
+    //Drag and drop
+    const templates = document.querySelectorAll('.template');
+    let isDragging = false; // Флаг для отслеживания процесса перетаскивания
+    let currentTemplate = null; // Текущий шаблон, который перетаскивается
+    let offsetX = 0; // Смещение для корректного размещения
+    let offsetY = 0;
+
+    document.getElementById('saveButton').addEventListener('click', saveGameField); // Кнопка save для поля
+
+    const placedObjects = []; // Массив для хранения размещённых объектов
 
 
-    if (!canvas || !gridWidth || !gridHeight ) {
+    if (!canvas || !gridWidth || !gridHeight) {
         console.error("Один или несколько элементов не найдены!");
         return;
     }
 
-   
     function drawGrid() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         ctx.strokeStyle = "#FFFFFF";
-       
+
         for (let x = 0; x <= canvas.width; x += cellSize) {
             ctx.beginPath();
             ctx.moveTo(x, 0);
             ctx.lineTo(x, canvas.height);
             ctx.stroke();
         }
-       
+
         for (let y = 0; y <= canvas.height; y += cellSize) {
             ctx.beginPath();
             ctx.moveTo(0, y);
             ctx.lineTo(canvas.width, y);
             ctx.stroke();
         }
+
+        placedObjects.forEach(obj => {
+            ctx.drawImage(obj.image, obj.x, obj.y, cellSize, cellSize);
+        });
     }
 
     function updateCanvasSize() {
@@ -40,33 +52,144 @@ document.addEventListener('DOMContentLoaded', () => {
         const newGridHeight = parseInt(gridHeight.value, 10);
 
         if (isNaN(newGridWidth) || isNaN(newGridHeight)) {
-            return; 
-        }
-
-
-        if(newGridHeight > 10 || newGridWidth > 10 || newGridHeight < 4 || newGridWidth < 4)
-        {
-            alert('Допустимый диапозон значений от 4 до 10. Попробуйте снова')
             return;
         }
 
-        
-        if (newGridHeight != newGridWidth) {
+        if (newGridHeight > 10 || newGridWidth > 10 || newGridHeight < 4 || newGridWidth < 4) {
+            alert('Допустимый диапазон значений от 4 до 10. Попробуйте снова');
+            return;
+        }
+
+        if (newGridHeight !== newGridWidth) {
             alert('Поле должно быть квадратным');
             return;
         }
-
+        
         canvas.width = newGridWidth * cellSize;
         canvas.height = newGridHeight * cellSize;
 
-        drawGrid(); 
+        drawGrid();
     }
 
-    
+    function getObjectAtPosition(x, y) {
+        return placedObjects.find(obj =>
+            x >= obj.x &&
+            x < obj.x + cellSize &&
+            y >= obj.y &&
+            y < obj.y + cellSize
+        );
+    }
+
+    // Перетаскивание шаблона из списка
+    templates.forEach(template => {
+        template.addEventListener('mousedown', e => {
+            const rect = template.getBoundingClientRect();
+
+            currentTemplate = {
+                image: new Image(),
+                x: 0,
+                y: 0
+            };
+            currentTemplate.image.src = template.src;
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+
+            isDragging = true;
+        });
+    });
+
+    // Начало перетаскивания на canvas
+    canvas.addEventListener('mousedown', e => {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const selectedObject = getObjectAtPosition(mouseX, mouseY);
+        if (selectedObject) {
+            currentTemplate = selectedObject;
+            isDragging = true;
+
+            offsetX = mouseX - selectedObject.x;
+            offsetY = mouseY - selectedObject.y;
+
+            // Удаляем объект из массива, чтобы избежать дублирования
+            const index = placedObjects.indexOf(selectedObject);
+            if (index > -1) placedObjects.splice(index, 1);
+        }
+    });
+
+    // Перемещение объекта
+    canvas.addEventListener('mousemove', e => {
+        if (isDragging && currentTemplate) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            currentTemplate.x = Math.floor((mouseX - offsetX) / cellSize) * cellSize;
+            currentTemplate.y = Math.floor((mouseY - offsetY) / cellSize) * cellSize;
+
+            drawGrid();
+            ctx.drawImage(
+                currentTemplate.image,
+                currentTemplate.x,
+                currentTemplate.y,
+                cellSize,
+                cellSize
+            );
+        }
+    });
+
+    // Завершение перетаскивания
+    canvas.addEventListener('mouseup', () => {
+        if (isDragging && currentTemplate) {
+            // Добавляем объект обратно в массив
+            placedObjects.push({
+                image: currentTemplate.image,
+                x: currentTemplate.x,
+                y: currentTemplate.y
+            });
+
+            currentTemplate = null;
+            isDragging = false;
+
+            drawGrid();
+        }
+    });
+
     gridWidth.addEventListener('blur', updateCanvasSize);
     gridHeight.addEventListener('blur', updateCanvasSize);
 
-   
     drawGrid();
-});
 
+    function saveGameField() {
+        console.log('Placed Objects:', placedObjects);
+        const placedObjectsJSON = JSON.stringify(placedObjects); // Преобразуем в JSON
+        const taskData = {
+            title: document.getElementById('taskTitle').value,
+            description: document.getElementById('taskDescription').value
+        };
+        console.log("Отправляемые данные:", { game_field: placedObjectsJSON, task: taskData });
+    
+        fetch('/constructor/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({
+                game_field: placedObjectsJSON,
+                task: taskData
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response:', data);
+            if (data.status === 'success') {
+                alert('Поле успешно сохранено!');
+            } else {
+                alert('Ошибка: ' + data.message);
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+    }
+});

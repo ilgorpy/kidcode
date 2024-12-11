@@ -1,6 +1,9 @@
 from django.db import models
 import uuid
 
+def jsonfield_default_value():  # This is a callable
+    return [0, 0]
+
 class Task(models.Model):
     deadline = models.DateField()
     level = models.CharField(max_length=100)
@@ -40,7 +43,7 @@ class GameField(models.Model):
     cube = models.IntegerField()
     hole = models.IntegerField()
     block = models.IntegerField()
-    json_field = models.JSONField()
+    data = models.JSONField(default= jsonfield_default_value)
 
 
 class JournalViewManager(models.Manager):
