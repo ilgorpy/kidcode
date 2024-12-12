@@ -9,6 +9,6 @@ urlpatterns = [
     path('profile/', views.UserPasswordChange.as_view(), name = 'profile'),
     path('journal/', views.Journal.as_view(), name='journal'),
     path('record/', views.record, name='record'),
-    path('task/', views.task, name='task'),
+    path('task/<int:pk>/', views.Task.as_view(), name='task'),
     path('update_grade/', views.update_grade, name='update_grade'),
 ]

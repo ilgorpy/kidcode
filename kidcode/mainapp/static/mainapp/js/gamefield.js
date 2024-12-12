@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    const cellSize = 60; 
+    const cellSize = 64; 
     let gridWidth = document.getElementById('id_width');
-    let gridHeight = document.getElementById('id_height')
+    let gridHeight = document.getElementById('id_height');
     canvas.width = gridWidth * cellSize;
-    canvas.width = gridWidth * cellSize;
+    canvas.height = gridHeight * cellSize;
     //Drag and drop
     const templates = document.querySelectorAll('.template');
     let isDragging = false; // Флаг для отслеживания процесса перетаскивания
@@ -14,12 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let offsetY = 0;
 
     const placedObjects = []; // Массив для хранения размещённых объектов
-
-
-    if (!canvas || !gridWidth || !gridHeight) {
-        console.error("Один или несколько элементов не найдены!");
-        return;
-    }
 
     function drawGrid() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);

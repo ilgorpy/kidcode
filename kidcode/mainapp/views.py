@@ -1,6 +1,6 @@
 from django.db import connection
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from users.models import User
 from django.contrib import messages
 from mainapp.models import *
@@ -126,23 +126,17 @@ class FieldsSettings(View):
 
     def post(self, request, *args, **kwargs):
         # Получаем данные из тела запроса
-
-        
-
         try:
             if not request.body:  # Проверка на пустое тело
                 return JsonResponse({'status': 'error', 'message': 'Empty request body'}, status=400)
             data = json.loads(request.body)
-
-
             # Данные для GameField
             width = data.get('width')
             height = data.get('height')
             cube = data.get('cube')
             hole = data.get('hole')
             block = data.get('block')
-            icon_position = data.get('iconPosition')  # Позиция иконки котика в формате JSON
-
+            icon_position = data.get('iconPosition') 
             # Создание GameField
             gamefield = GameField.objects.create(
                 width=width,
@@ -152,7 +146,6 @@ class FieldsSettings(View):
                 block=block,
                 data=icon_position
             )
-
             # Данные для Task
             deadline = data.get('deadline')
             level = data.get('level')
@@ -160,7 +153,6 @@ class FieldsSettings(View):
             clue = data.get('clue')
             text_exercise = data.get('text_exercise')
             difficult = data.get('difficult')
-
             # Создание Task
             task = Task.objects.create(
                 deadline=deadline,
@@ -171,13 +163,19 @@ class FieldsSettings(View):
                 difficult=difficult,
                 gamefield=gamefield
             )
-
             return JsonResponse({'status': 'success', 'task_id': task.id}, status=201)
-
+        
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     
+class Task(View):
+    model = Task
+    form_class = TaskTextForm
+    template_name = 'mainapp/task.html'
+    def get(self, request, pk):
+        task = get_object_or_404(Task, pk=pk)
+        return render(request, 'mainapp/task.html', {'task': task})
+    
 
-
-def task(request):
-    return render(request, 'mainapp/task.html')
+# def task(request):
+#     return render(request, 'mainapp/task.html')

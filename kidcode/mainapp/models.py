@@ -1,5 +1,4 @@
 from django.db import models
-import uuid
 
 def jsonfield_default_value():  # This is a callable
     return [0, 0]
