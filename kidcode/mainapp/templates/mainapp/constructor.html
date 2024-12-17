@@ -9,7 +9,7 @@
     <button type="button" id="manualButton">Ручной</button>
 </div>
 
-<form method="post", class="settings">
+<form method="post", class="settings" id="manualForm">
     <h1>Конструктор игрового поля</h1>
     {% csrf_token %}
     
@@ -50,7 +50,7 @@
     </div>
 </form>
 
-{% comment %} <form method="post" class="settings" id="autoForm" style="display: none;">
+<form method="post" class="settings" id="autoForm" style="display: none;">
     <h1>Конструктор игрового поля</h1>
     {% csrf_token %}
     
@@ -69,7 +69,7 @@
         <button type="submit" class="main">Сохранить</button>
         <button type="reset" class="reset">Очистить</button>
     </div>
-</form> {% endcomment %}
+</form>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {

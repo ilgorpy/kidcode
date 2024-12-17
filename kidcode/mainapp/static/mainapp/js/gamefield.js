@@ -157,11 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     const saveButton = document.getElementById('saveButton');
-    const form = document.querySelector('form.settings');
+    const form = document.getElementById('manualForm');
 
     form.addEventListener('submit', function (e) {
         e.preventDefault(); // Отключаем стандартное поведение формы
-
         // Собираем данные из формы
         const formData = new FormData(form);
         const jsonData = {};
