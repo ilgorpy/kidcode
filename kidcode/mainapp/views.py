@@ -125,48 +125,18 @@ class FieldsSettings(View):
         })
 
     def post(self, request, *args, **kwargs):
-        # Получаем данные из тела запроса
-        try:
-            if not request.body:  # Проверка на пустое тело
-                return JsonResponse({'status': 'error', 'message': 'Empty request body'}, status=400)
-            data = json.loads(request.body)
-            # Данные для GameField
-            width = data.get('width')
-            height = data.get('height')
-            cube = data.get('cube')
-            hole = data.get('hole')
-            block = data.get('block')
-            icon_position = data.get('iconPosition') 
-            # Создание GameField
-            gamefield = GameField.objects.create(
-                width=width,
-                height=height,
-                cube=cube,
-                hole=hole,
-                block=block,
-                data=icon_position
-            )
-            # Данные для Task
-            deadline = data.get('deadline')
-            level = data.get('level')
-            chapter = data.get('chapter')
-            clue = data.get('clue')
-            text_exercise = data.get('text_exercise')
-            difficult = data.get('difficult')
-            # Создание Task
-            task = Task.objects.create(
-                deadline=deadline,
-                level=level,
-                chapter=chapter,
-                clue=clue,
-                text_exercise=text_exercise,
-                difficult=difficult,
-                gamefield=gamefield
-            )
-            return JsonResponse({'status': 'success', 'task_id': task.id}, status=201)
-        
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+       data = json.loads(request.body)  # Загружаем данные из JSON
+       fields_form = FieldsSettingsForm(data)
+       task_form = TaskTextForm(data)
+
+       if fields_form.is_valid() and task_form.is_valid():
+           game_field = fields_form.save()
+           task = task_form.save(commit=False)
+           task.gamefield = game_field
+           task.save()
+           return JsonResponse({'status': 'success'})  # Возвращаем JSON-ответ
+
+       return JsonResponse({'status': 'error', 'errors': fields_form.errors}, status=400)
     
 class Task(View):
     model = Task

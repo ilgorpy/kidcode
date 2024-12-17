@@ -3,15 +3,19 @@
 {% block content %}
 
 <script src="{% static 'mainapp/js/gamefield.js' %}" defer></script>
+
+<div class="mode-selection">
+    <button type="button" id="autoButton">Автоматический</button>
+    <button type="button" id="manualButton">Ручной</button>
+</div>
+
 <form method="post", class="settings">
     <h1>Конструктор игрового поля</h1>
     {% csrf_token %}
-
- 
-    <h2 class = "h2-settings">Параметры игрового поля</h2>
+    
+    <h2 class="h2-settings">Параметры игрового поля</h2>
     {% for field in fields_form %}
         <label class="label-settings" for="{{ field.id_for_label }}">{{ field.label }}</label><br>
-       
         {{ field }}<br>
         {% if field.errors %}
             <div style="color: red;">
@@ -26,9 +30,10 @@
         <img src="{% static 'mainapp/images/pixel-last.png' %}" class="template" draggable="true" id="template2">
         <img src="{% static 'mainapp/images/egg.png' %}" class="template" draggable="true" id="template3">
         <img src="{% static 'mainapp/images/block_5.png' %}" class="template" draggable="true" id="template4">
-      </div>
-      <hr>
-    <h2 class = "h2-settings">Текст задания</h2>
+    </div>
+    <hr>
+
+    <h2 class="h2-settings">Текст задания</h2>
     {% for field in task_form %}
         <label class="label-settings" for="{{ field.id_for_label }}">{{ field.label }}</label><br>
         {{ field }}<br>
@@ -39,14 +44,53 @@
         {% endif %}
     {% endfor %}
 
-    
-    <div class = "buttons">
-        <button id="saveButton"  class="main">Сохранить</button>
-        <button type="reset" class = "reset">Очистить</button>
-        </div>
-
-       
+    <div class="buttons">
+        <button type="submit" class="main" id="saveButton">Сохранить</button>
+        <button type="reset" class="reset">Очистить</button>
+    </div>
 </form>
+
+{% comment %} <form method="post" class="settings" id="autoForm" style="display: none;">
+    <h1>Конструктор игрового поля</h1>
+    {% csrf_token %}
+    
+    <h2 class="h2-settings">Текст задания</h2>
+    {% for field in task_form %}
+        <label class="label-settings" for="{{ field.id_for_label }}">{{ field.label }}</label><br>
+        {{ field }}<br>
+        {% if field.errors %}
+            <div style="color: red;">
+                {{ field.errors }}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <div class="buttons">
+        <button type="submit" class="main">Сохранить</button>
+        <button type="reset" class="reset">Очистить</button>
+    </div>
+</form> {% endcomment %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const autoButton = document.getElementById('autoButton');
+        const manualButton = document.getElementById('manualButton');
+        
+        const manualForm = document.getElementById('manualForm');
+        const autoForm = document.getElementById('autoForm');
+    
+        autoButton.addEventListener('click', () => {
+            manualForm.style.display = 'none'; // Скрываем ручную форму
+            autoForm.style.display = 'block'; // Показываем автоматическую форму
+        });
+    
+        manualButton.addEventListener('click', () => {
+            autoForm.style.display = 'none'; // Скрываем автоматическую форму
+            manualForm.style.display = 'block'; // Показываем ручную форму
+        });
+    });
+</script>
+
 
 <canvas id="gameCanvas" width="500" height="500"></canvas>  
 

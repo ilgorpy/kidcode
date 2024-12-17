@@ -3,4 +3,6 @@ menu = [
     {"title": "Профиль", "url_name": "mainapp:profile"},
     
 ]
-    
+
+
+
