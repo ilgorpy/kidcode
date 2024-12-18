@@ -161,6 +161,7 @@ class FieldsSettings(View):
         fields_form = FieldsSettingsForm(game_field_json)
         # Создайте экземпляр формы с данными из POST
         task_form = TaskTextForm(request.POST)
+        print(request.POST)
 
         if task_form.is_valid():  # Проверьте валидность формы
             task = task_form.save(commit=False)

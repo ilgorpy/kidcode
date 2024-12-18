@@ -4,13 +4,15 @@
 
 <script src="{% static 'mainapp/js/gamefield.js' %}" defer></script>
 
-<div class="mode-selection">
-    <button type="button" id="autoButton">Автоматический</button>
-    <button type="button" id="manualButton">Ручной</button>
-</div>
 
-<form method="post", class="settings" id="manualForm">
+<div class = "gamefield-settings">
     <h1>Конструктор игрового поля</h1>
+    <h2 class = "h2-settings">Выберите способ создания</h2>
+    <div class="mode-selection">
+        <button class = 'main' type="button" id="autoButton">Автоматический</button>
+        <button class = 'main' type="button" id="manualButton">Ручной</button>
+    </div>
+<form method="post", class="settings" id="manualForm">
     {% csrf_token %}
     
     <h2 class="h2-settings">Параметры игрового поля</h2>
@@ -34,7 +36,13 @@
     </div>
     <hr>
 
-    <h2 class="h2-settings">Текст задания</h2>
+  
+</form>
+
+
+    <form method="post" class = "settings-text" id="textForm" >
+        {% csrf_token %}
+        <h2 class="h2-settings">Текст задания</h2>
     {% for field in task_form %}
         <label class="label-settings" for="{{ field.id_for_label }}">{{ field.label }}</label><br>
         {{ field }}<br>
@@ -46,62 +54,37 @@
     {% endfor %}
 
     <div class="buttons">
-        <button type="submit" class="main" id="saveButton">Сохранить</button>
-        <button type="reset" class="reset">Очистить</button>
+        <button type="submit" class="main" id = "savemanual">Сохранить</button>
+        <button type="submit" class="main" id = "saveauto" style="display: none;">Сохранить</button>
+        <button type="reset" class="clear">Очистить</button>
+        <button type = "button" class="reset" id = "generateButton" style="display: none;">Сгенерировать</button>
     </div>
 </form>
-
-<form method="post" class="settings" id="autoForm" style="display: none;">
-    <h1>Конструктор игрового поля</h1>
-    {% csrf_token %}
-
-    {% for field in fields_form %}
-    <div style="visibility: hidden;">
-        <label class="label-settings" for="{{ field.id_for_label }}">{{ field.label }}</label><br>
-        {{ field }}<br>
-        {% if field.errors %}
-            <div style="color: red;">
-                {{ field.errors }}
-            </div>
-        {% endif %}
-    </div>
-    
- 
-    {% endfor %}
-    
-    <h2 class="h2-settings">Текст задания</h2>
-    {% for field in task_form %}
-        <label class="label-settings" for="{{ field.id_for_label }}">{{ field.label }}</label><br>
-        {{ field }}<br>
-        {% if field.errors %}
-            <div style="color: red;">
-                {{ field.errors }}
-            </div>
-        {% endif %}
-    {% endfor %}
-
-    <div class="buttons">
-        <button type="submit" class="main">Сохранить</button>
-        <button type="reset" class="reset">Очистить</button>
-    </div>
-</form>
- 
+</div>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const autoButton = document.getElementById('autoButton');
         const manualButton = document.getElementById('manualButton');
+        const savemanual = document.getElementById('savemanual');
+        const saveauto = document.getElementById('saveauto');
+        const generateButton = document.getElementById('generateButton'); 
+        
         
         const manualForm = document.getElementById('manualForm');
         const autoForm = document.getElementById('autoForm');
     
         autoButton.addEventListener('click', () => {
             manualForm.style.display = 'none'; // Скрываем ручную форму
-            autoForm.style.display = 'block'; // Показываем автоматическую форму
+            saveauto.style.display = 'block';
+            savemanual.style.display = 'none';
+            generateButton.style.display = 'block';
         });
     
         manualButton.addEventListener('click', () => {
-            autoForm.style.display = 'none'; // Скрываем автоматическую форму
             manualForm.style.display = 'block'; // Показываем ручную форму
+            saveauto.style.display = 'none';
+            savemanual.style.display = 'block';
+            generateButton.style.display = 'none';
         });
     });
 </script>

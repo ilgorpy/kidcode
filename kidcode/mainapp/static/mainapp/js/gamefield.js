@@ -14,68 +14,54 @@ document.addEventListener('DOMContentLoaded', () => {
     let offsetY = 0;
 
     const placedObjects = []; // Массив для хранения размещённых объектов
-    const difficultySelect = document.querySelectorAll('#id_difficult');
-    const form_auto = document.getElementById('autoForm');
+   
+    const manualform = document.getElementById('manualForm');
+    const autoform = document.getElementById('autoForm');
+    const textform = document.getElementById('textForm');
+    const generateButton = document.getElementById('generateButton');
+    const difficultySelect = document.getElementById('id_difficult');
+    const autoButton = document.getElementById('autoButton');
+    const savemanual = document.getElementById('savemanual');
+    const saveauto = document.getElementById('saveauto');
 
-    difficultySelect.forEach(select => {
-        select.addEventListener('change', () => {
-            const selectedDifficulty = select.value;
-            if (selectedDifficulty === 'easy') {
-                jsonData = {
-                    'width': 4,
-                    'height': 4,
-                    'cube': 2,
-                    'hole': 3,
-                    'block': 2,
-                    'data': [{"x": 120, "y": 120}]
-                }
-            }
-            if (selectedDifficulty === 'medium') {
-                jsonData = {
-                    'width': 5,
-                    'height': 5,
-                    'cube': 3,
-                    'hole': 4,
-                    'block': 3,
-                    'data': [{"x": 120, "y": 120}]
-                }
-            }
-            
-            if (selectedDifficulty === 'hard') {
-                jsonData = {
-                    'width': 8,
-                    'height': 8,
-                    'cube': 10,
-                    'hole': 6,
-                    'block': 3,
-                    'data': [{"x": 120, "y": 120}]
-                }
-            }
-            gridWidth = jsonData['width'];
-            gridHeight = jsonData['height'];
-            console.log(selectedDifficulty);
-            fetch('/constructor/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                },
-                body: JSON.stringify(jsonData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                alert('Сохранение прошло успешно!');
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-                alert('Произошла ошибка при сохранении.');
-            });
-            drawGrid();
-        }); 
+
+    autoButton.addEventListener("click", function () {
+        const selectedDifficulty = difficultySelect.value; // Получаем выбранный уровень
+        if (selectedDifficulty === 'easy') {
+            jsonData = {
+                'width': 4,
+                'height': 4,
+                'cube': 2,
+                'hole': 3,
+                'block': 2,
+                'data': [{"x": 120, "y": 120}]
+            };
+        } else if (selectedDifficulty === 'medium') {
+            jsonData = {
+                'width': 5,
+                'height': 5,
+                'cube': 3,
+                'hole': 4,
+                'block': 3,
+                'data': [{"x": 120, "y": 120}]
+            };
+        } else if (selectedDifficulty === 'hard') {
+            jsonData = {
+                'width': 8,
+                'height': 8,
+                'cube': 10,
+                'hole': 6,
+                'block': 3,
+                'data': [{"x": 120, "y": 120}]
+            };
+        }
+        gridWidth = jsonData['width'];
+        gridHeight = jsonData['height'];
+        canvas.width = gridWidth * cellSize;
+        canvas.height = gridHeight * cellSize;
+        drawGrid(); // Перерисовываем сетку
     });
 
-    
 
     function drawGrid() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -114,10 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (newGridHeight !== newGridWidth) {
-            alert('Поле должно быть квадратным');
-            return;
-        }
         
         canvas.width = newGridWidth * cellSize;
         canvas.height = newGridHeight * cellSize;
@@ -217,24 +199,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     drawGrid();
 
-    
 
-
-    const saveButton = document.getElementById('saveButton');
-    const form = document.getElementById('manualForm');
-
-    form.addEventListener('submit', function (e) {
+    //Функция для обработки ручного поля
+    savemanual.addEventListener('click', function (e) {
         e.preventDefault(); // Отключаем стандартное поведение формы
         // Собираем данные из формы
-        const formData = new FormData(form);
+        const formData = new FormData(textform);
+        const formData2 = new FormData(manualform);
         const jsonData = {};
         formData.forEach((value, key) => {
             jsonData[key] = value;
         });
+        formData2.forEach((value, key) => {
+            jsonData[key] = value;
+        });
 
         // Добавляем дополнительные данные (например, координаты из canvas)
-        jsonData.iconPosition = placedObjects; // Это пример, замените на реальные координаты
-
+        jsonData.iconPosition = placedObjects; 
+        console.log(jsonData);
         // Отправляем данные через fetch
         fetch('/constructor/', {
             method: 'POST',
@@ -254,5 +236,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Произошла ошибка при сохранении.');
             });
     });
+
+    //Функция для обработки автоматического поля
+    saveauto.addEventListener('click', function (e) {
+        e.preventDefault(); // Отключаем стандартное поведение формы
+        // Собираем данные из формы
+        const formData = new FormData(textform);
+        const jsonData = {};
+        formData.forEach((value, key) => {
+            jsonData[key] = value;
+        });
+
+        // Добавляем дополнительные данные (например, координаты из canvas)
+        // jsonData.width = gridWidth.value;
+        // jsonData.height = gridHeight.value;
+        jsonData.iconPosition = placedObjects; 
+        console.log(jsonData);
+        // Отправляем данные через fetch
+        fetch('/constructor/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken') // Передаём CSRF токен
+            },
+            body: JSON.stringify(jsonData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                alert('Сохранение прошло успешно!');
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при сохранении.');
+            });
+    });
+
 });
 

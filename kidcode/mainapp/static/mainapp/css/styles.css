@@ -356,6 +356,22 @@ button.reset{
   width: 120px;
   height: 50px;
   padding: 10px;
+  display: hidden;
+  align-self: center;
+  border: none;
+  border-radius: 4px;
+  background-color: #b0db15; /* Ярко-зеленый цвет кнопки */
+  color: #ffffff;
+  font-family: monocraft;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.clear{
+  width: 120px;
+  height: 50px;
+  padding: 10px;
   padding-left: 10px;
   align-self: center;
   border: 2px solid #A62714;
@@ -369,7 +385,7 @@ button.reset{
 }
 
 .buttons{
-  margin-top: 30px;
+  margin-top: auto;
 }
 
 h1.h{
@@ -530,24 +546,25 @@ form.change{
   background-color: #45a049;
 }
 
-form.settings{
+.gamefield-settings{
   padding-top: 20px;
   padding-left: 40px; 
   padding-right: 40px; 
-  /* height: 100%; */
   position: absolute;
   left: 0px;
   top: 75px;
   background-color: #22231E;
   width: 400px;
+  display: flex;
+  flex-direction: column;
 }
 
-form.settings h1{
+
+.gamefield-settings h1{
   font-family: monocraft;
     font-size: 24px;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
     margin-top: 20px;
-    margin-bottom: 40px;
     text-align: center;
 }
 
