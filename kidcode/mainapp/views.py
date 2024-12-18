@@ -142,37 +142,30 @@ class FieldsSettings(View):
         })
 
     def post(self, request, *args, **kwargs):
-        if request.content_type == 'application/json':  # Проверяем, что загружен JSON
-            data = json.loads(request.body)  # Загружаем данные из JSON
-            fields_form = FieldsSettingsForm(data)
-            task_form = TaskTextForm(data)
+        # if request.content_type == 'application/json':  # Проверяем, что загружен JSON
+        #     data = json.loads(request.body)  # Загружаем данные из JSON
+        #     fields_form = FieldsSettingsForm(data)
+        #     task_form = TaskTextForm(data)
 
-            if fields_form.is_valid() and task_form.is_valid():
-                game_field = fields_form.save()
-                task = task_form.save(commit=False)
-                task.gamefield = game_field
-                task.save()
-                return JsonResponse({'status': 'success'})  # Возвращаем JSON-ответ
+        #     if fields_form.is_valid() and task_form.is_valid():
+        #         game_field = fields_form.save()
+        #         task = task_form.save(commit=False)
+        #         task.gamefield = game_field
+        #         task.save()
+        #         return JsonResponse({'status': 'success'})  # Возвращаем JSON-ответ
 
-            return JsonResponse({'status': 'error', 'errors': fields_form.errors}, status=400)
-        else:
-            difficult = request.POST.get('difficult')
-        if difficult == "easy":
-            result = easy_gamefield()
-            gamefield = GameField.objects.create(**result)
-        elif difficult == "medium":
-            result = medium_gamefield()
-            gamefield = GameField.objects.create(**result)
-        elif difficult == "hard":
-            result = hard_gamefield()
-            gamefield = GameField.objects.create(**result)
-
+        #     return JsonResponse({'status': 'errorrrr', 'errors': fields_form.errors}, status=400)
+        # else:
+        game_field_json = json.loads(request.body)
+        print(game_field_json)
+        fields_form = FieldsSettingsForm(game_field_json)
         # Создайте экземпляр формы с данными из POST
         task_form = TaskTextForm(request.POST)
 
         if task_form.is_valid():  # Проверьте валидность формы
             task = task_form.save(commit=False)
-            task.gamefield = gamefield
+            game_field = fields_form.save()
+            task.gamefield = game_field
             task.save()
             return render(request, self.template_name, {
                 'fields_form': FieldsSettingsForm(),  # Если форма не нужна, можно убрать

@@ -14,6 +14,68 @@ document.addEventListener('DOMContentLoaded', () => {
     let offsetY = 0;
 
     const placedObjects = []; // Массив для хранения размещённых объектов
+    const difficultySelect = document.querySelectorAll('#id_difficult');
+    const form_auto = document.getElementById('autoForm');
+
+    difficultySelect.forEach(select => {
+        select.addEventListener('change', () => {
+            const selectedDifficulty = select.value;
+            if (selectedDifficulty === 'easy') {
+                jsonData = {
+                    'width': 4,
+                    'height': 4,
+                    'cube': 2,
+                    'hole': 3,
+                    'block': 2,
+                    'data': [{"x": 120, "y": 120}]
+                }
+            }
+            if (selectedDifficulty === 'medium') {
+                jsonData = {
+                    'width': 5,
+                    'height': 5,
+                    'cube': 3,
+                    'hole': 4,
+                    'block': 3,
+                    'data': [{"x": 120, "y": 120}]
+                }
+            }
+            
+            if (selectedDifficulty === 'hard') {
+                jsonData = {
+                    'width': 8,
+                    'height': 8,
+                    'cube': 10,
+                    'hole': 6,
+                    'block': 3,
+                    'data': [{"x": 120, "y": 120}]
+                }
+            }
+            gridWidth = jsonData['width'];
+            gridHeight = jsonData['height'];
+            console.log(selectedDifficulty);
+            fetch('/constructor/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                alert('Сохранение прошло успешно!');
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при сохранении.');
+            });
+            drawGrid();
+        }); 
+    });
+
+    
 
     function drawGrid() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -155,6 +217,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     drawGrid();
 
+    
+
 
     const saveButton = document.getElementById('saveButton');
     const form = document.getElementById('manualForm');
@@ -190,7 +254,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Произошла ошибка при сохранении.');
             });
     });
-
-    
 });
 
