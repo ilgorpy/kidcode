@@ -6,7 +6,6 @@ app_name = 'mainapp'
 urlpatterns = [
     path('', views.index, name='home'),
     path('constructor/', views.FieldsSettings.as_view(), name='constructor'),
-    # path('constructor/', views.FieldAuto.as_view(), name='constructor_auto'),
     path('profile/', views.UserPasswordChange.as_view(), name = 'profile'),
     path('journal/', views.Journal.as_view(), name='journal'),
     path('record/', views.record, name='record'),

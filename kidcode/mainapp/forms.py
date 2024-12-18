@@ -32,6 +32,11 @@ class FieldsSettingsForm(forms.ModelForm):
     class Meta:
         model = GameField
         fields = ['width', 'height', 'cube', 'hole', 'block']
+
+class FieldSaveForm(forms.ModelForm):
+    class Meta:
+        model = GameField
+        fields = ['width', 'height', 'cube', 'hole', 'block', 'data']
     
     
     

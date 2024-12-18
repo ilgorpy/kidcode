@@ -7,7 +7,7 @@ from mainapp.models import *
 from mainapp.gamefields import *
 from django.db.models import Q
 from django.urls import reverse, reverse_lazy
-from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm, FieldsSettingsForm, TaskTextForm
+from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm, FieldsSettingsForm, TaskTextForm, FieldSaveForm
 from django.views.generic import UpdateView, CreateView, TemplateView, View
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.decorators import login_required
@@ -111,23 +111,6 @@ class UserNameChange(UpdateView):
     success_url = reverse_lazy("mainapp:profile")
     template_name = "mainapp/profile.html"
 
-
-class FieldAuto(View):
-    template_name = 'mainapp/constructor.html'
-    model = Task
-    fields = []
-
-    def get(self, request, *args, **kwargs):
-        fields_form = FieldsSettingsForm()
-        task_form = TaskTextForm()
-        return render(request, self.template_name, {
-            'fields_form': fields_form,
-            'task_form': task_form
-        })
-    
-    def post():
-        pass
-
 class FieldsSettings(View):
     template_name = 'mainapp/constructor.html'
     model = Task
@@ -142,42 +125,19 @@ class FieldsSettings(View):
         })
 
     def post(self, request, *args, **kwargs):
-        # if request.content_type == 'application/json':  # Проверяем, что загружен JSON
-        #     data = json.loads(request.body)  # Загружаем данные из JSON
-        #     fields_form = FieldsSettingsForm(data)
-        #     task_form = TaskTextForm(data)
+            data = json.loads(request.body)  # Загружаем данные из JSON
+            fields_form = FieldSaveForm(data)
+            task_form = TaskTextForm(data)
+         
+            if fields_form.is_valid() and task_form.is_valid():
+                game_field = fields_form.save()
+                task = task_form.save(commit=False)
+                task.gamefield = game_field
+                task.save()
+                return JsonResponse({'status': 'success'})  # Возвращаем JSON-ответ
 
-        #     if fields_form.is_valid() and task_form.is_valid():
-        #         game_field = fields_form.save()
-        #         task = task_form.save(commit=False)
-        #         task.gamefield = game_field
-        #         task.save()
-        #         return JsonResponse({'status': 'success'})  # Возвращаем JSON-ответ
+            return JsonResponse({'status': 'errorrrr', 'errors': fields_form.errors}, status=400)
 
-        #     return JsonResponse({'status': 'errorrrr', 'errors': fields_form.errors}, status=400)
-        # else:
-        game_field_json = json.loads(request.body)
-        print(game_field_json)
-        fields_form = FieldsSettingsForm(game_field_json)
-        # Создайте экземпляр формы с данными из POST
-        task_form = TaskTextForm(request.POST)
-        print(request.POST)
-
-        if task_form.is_valid():  # Проверьте валидность формы
-            task = task_form.save(commit=False)
-            game_field = fields_form.save()
-            task.gamefield = game_field
-            task.save()
-            return render(request, self.template_name, {
-                'fields_form': FieldsSettingsForm(),  # Если форма не нужна, можно убрать
-                'task_form': TaskTextForm()  # Очистите форму после успешного сохранения
-            })
-        else:
-            # Обработка ошибок формы
-            return render(request, self.template_name, {
-                'fields_form': FieldsSettingsForm(),  # Если форма не нужна, можно убрать
-                'task_form': task_form  # Вернуть заполненную форму с ошибками
-            })
 
 
 

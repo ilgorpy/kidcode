@@ -23,12 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const autoButton = document.getElementById('autoButton');
     const savemanual = document.getElementById('savemanual');
     const saveauto = document.getElementById('saveauto');
+    let randomData = {};
 
 
     autoButton.addEventListener("click", function () {
         const selectedDifficulty = difficultySelect.value; // Получаем выбранный уровень
         if (selectedDifficulty === 'easy') {
-            jsonData = {
+            randomData = {
                 'width': 4,
                 'height': 4,
                 'cube': 2,
@@ -37,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 'data': [{"x": 120, "y": 120}]
             };
         } else if (selectedDifficulty === 'medium') {
-            jsonData = {
+            randomData = {
                 'width': 5,
                 'height': 5,
                 'cube': 3,
@@ -46,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 'data': [{"x": 120, "y": 120}]
             };
         } else if (selectedDifficulty === 'hard') {
-            jsonData = {
+            randomData = {
                 'width': 8,
                 'height': 8,
                 'cube': 10,
@@ -55,8 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 'data': [{"x": 120, "y": 120}]
             };
         }
-        gridWidth = jsonData['width'];
-        gridHeight = jsonData['height'];
+        gridWidth = randomData['width'];
+        gridHeight = randomData['height'];
         canvas.width = gridWidth * cellSize;
         canvas.height = gridHeight * cellSize;
         drawGrid(); // Перерисовываем сетку
@@ -215,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Добавляем дополнительные данные (например, координаты из canvas)
-        jsonData.iconPosition = placedObjects; 
+        jsonData.data = placedObjects; 
         console.log(jsonData);
         // Отправляем данные через fetch
         fetch('/constructor/', {
@@ -250,6 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Добавляем дополнительные данные (например, координаты из canvas)
         // jsonData.width = gridWidth.value;
         // jsonData.height = gridHeight.value;
+        Object.assign(jsonData, randomData);
         jsonData.iconPosition = placedObjects; 
         console.log(jsonData);
         // Отправляем данные через fetch
