@@ -140,10 +140,20 @@ class FieldsSettings(View):
 
 
 
+def get_chapters(request):
+    chapters = Task.objects.values('chapter').distinct()
+    chapter_list = [chapter['chapter'] for chapter in chapters]
+    return JsonResponse(chapter_list, safe=False)
+
+def get_levels(request, chapter_name):
+    levels = Task.objects.filter(chapter=chapter_name).values('level')
+    level_list = [level['level'] for level in levels]
+    print(level_list)
+    return JsonResponse(level_list, safe=False)
 
 
     
-class Task(View):
+class Task1(View):
     model = Task
     form_class = TaskTextForm
     template_name = 'mainapp/task.html'
