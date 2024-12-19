@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let offsetX = 0; // Смещение для корректного размещения
     let offsetY = 0;
 
-    const placedObjects = []; // Массив для хранения размещённых объектов
+    let placedObjects = []; // Массив для хранения размещённых объектов
    
     const manualform = document.getElementById('manualForm');
     const autoform = document.getElementById('autoForm');
@@ -25,8 +25,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveauto = document.getElementById('saveauto');
     let randomData = {};
 
+    const cubeInput = document.getElementById('id_cube'); // Поле "Количество кубиков"
+    const holeInput = document.getElementById('id_hole'); // Поле "Количество лунок"
+    const blockInput = document.getElementById('id_block'); // Поле "Количество занятых клеток"
 
-    autoButton.addEventListener("click", function () {
+  
+    // Переменные для отслеживания лимитов
+    let maxCubes = parseInt(cubeInput.value, 10) || 0;
+    let maxHoles = parseInt(holeInput.value, 10) || 0;
+    let maxBlocks = parseInt(blockInput.value, 10) || 0;
+
+    // Слушатели для обновления лимитов при изменении полей ввода
+    cubeInput.addEventListener('input', () => {
+        maxCubes = parseInt(cubeInput.value, 10) || 0;
+    });
+    holeInput.addEventListener('input', () => {
+        maxHoles = parseInt(holeInput.value, 10) || 0;
+    });
+    blockInput.addEventListener('input', () => {
+        maxBlocks = parseInt(blockInput.value, 10) || 0;
+    });
+
+
+    generateButton.addEventListener("click", function () {
         const selectedDifficulty = difficultySelect.value; // Получаем выбранный уровень
         if (selectedDifficulty === 'easy') {
             randomData = {
@@ -34,34 +55,72 @@ document.addEventListener('DOMContentLoaded', () => {
                 'height': 4,
                 'cube': 2,
                 'hole': 3,
-                'block': 2,
-                'data': [{"x": 120, "y": 120}]
+                'block': 1,
             };
         } else if (selectedDifficulty === 'medium') {
             randomData = {
-                'width': 5,
-                'height': 5,
+                'width': 6,
+                'height': 6,
                 'cube': 3,
                 'hole': 4,
-                'block': 3,
-                'data': [{"x": 120, "y": 120}]
+                'block': 2,
             };
         } else if (selectedDifficulty === 'hard') {
             randomData = {
                 'width': 8,
                 'height': 8,
-                'cube': 10,
+                'cube': 5,
                 'hole': 6,
                 'block': 3,
-                'data': [{"x": 120, "y": 120}]
             };
         }
+    
         gridWidth = randomData['width'];
         gridHeight = randomData['height'];
         canvas.width = gridWidth * cellSize;
         canvas.height = gridHeight * cellSize;
+    
+        placedObjects = generateObjects(randomData); // Генерируем объекты
         drawGrid(); // Перерисовываем сетку
     });
+
+    function generateObjects(randomData) {
+        const generatedObjects = []; // Массив для хранения объектов
+    
+        const addObject = (type, count) => {
+            let placed = 0;
+    
+            while (placed < count) {
+                const x = Math.floor(Math.random() * gridWidth) * cellSize;
+                const y = Math.floor(Math.random() * gridHeight) * cellSize;
+    
+                // Проверяем, занята ли клетка
+                const isOccupied = generatedObjects.some(obj => obj.x === x && obj.y === y);
+                if (!isOccupied) {
+                    generatedObjects.push({
+                        image: (() => {
+                            const img = new Image();
+                            if (type === 'cube') img.src = cubeImage;
+                            else if (type === 'hole') img.src = holeImage;
+                            else if (type === 'block') img.src = blockImage;
+                            return img;
+                        })(),
+                        x: x,
+                        y: y,
+                        id: type
+                    });
+                    placed++;
+                }
+            }
+        };
+    
+        // Добавляем объекты по типу
+        addObject('cube', randomData.cube); // Кубики
+        addObject('hole', randomData.hole); // Лунки
+        addObject('block', randomData.block); // Блоки
+    
+        return generatedObjects;
+    }
 
 
     function drawGrid() {
@@ -126,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 image: new Image(),
                 x: 0,
                 y: 0,
-                id: template.id
+                id: template.dataset.type // Получаем тип объекта из data-type
             };
             currentTemplate.image.src = template.src;
             offsetX = e.clientX - rect.left;
@@ -180,18 +239,45 @@ document.addEventListener('DOMContentLoaded', () => {
     // Завершение перетаскивания
     canvas.addEventListener('mouseup', () => {
         if (isDragging && currentTemplate) {
-            // Добавляем объект обратно в массив
-            placedObjects.push({
-                image: currentTemplate.image,
-                x: currentTemplate.x,
-                y: currentTemplate.y,
-                id: currentTemplate.id
-            });
-
+            // Подсчитываем количество объектов текущего типа
+            const objectCount = placedObjects.filter(obj => obj.id === currentTemplate.id).length;
+    
+            let limitExceeded = false;
+    
+            if (currentTemplate.id === 'cube' && objectCount >= maxCubes) {
+                alert('Превышено количество кубиков!');
+                limitExceeded = true;
+            } else if (currentTemplate.id === 'hole' && objectCount >= maxHoles) {
+                alert('Превышено количество лунок!');
+                limitExceeded = true;
+            } else if (currentTemplate.id === 'block' && objectCount >= maxBlocks) {
+                alert('Превышено количество блоков!');
+                limitExceeded = true;
+            }
+    
+            if (!limitExceeded) {
+                // Проверяем, занята ли клетка
+                const isOccupied = placedObjects.some(obj =>
+                    obj.x === currentTemplate.x && obj.y === currentTemplate.y
+                );
+    
+                if (!isOccupied) {
+                    // Добавляем объект в массив, если клетка не занята и лимит не превышен
+                    placedObjects.push({
+                        image: currentTemplate.image,
+                        x: currentTemplate.x,
+                        y: currentTemplate.y,
+                        id: currentTemplate.id
+                    });
+                } else {
+                    alert('Эта клетка уже занята!');
+                }
+            }
+    
             currentTemplate = null;
             isDragging = false;
-
-            drawGrid();
+    
+            drawGrid(); // Перерисовываем сетку
         }
     });
 
@@ -247,10 +333,6 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.forEach((value, key) => {
             jsonData[key] = value;
         });
-
-        // Добавляем дополнительные данные (например, координаты из canvas)
-        // jsonData.width = gridWidth.value;
-        // jsonData.height = gridHeight.value;
         Object.assign(jsonData, randomData);
         jsonData.iconPosition = placedObjects; 
         console.log(jsonData);
