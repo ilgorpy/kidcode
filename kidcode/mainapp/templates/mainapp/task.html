@@ -4,10 +4,21 @@
 {% block content %}
 
 <div class="task-container">
-    <h1>{{ task.chapter }}</h1>
+    <div class = "task-change">
+        <h1>Название курса</h1>
+    
+        <a href="#" class="button back">Назад</a>
+        <a href="#" class="button forward">Вперед</a>
+
+        <p>
+            {{ task.chapter }}<span class="arrow">&#8250;</span>{{task.level}}
+        </p>
+    </div>
+    <hr>
+    <h1>Глава: {{ task.chapter }}</h1>
     <h2>Уровень: {{ task.level }}</h2>
-    <p>Сложность: <span class="difficulty">{{ task.difficult }}</span></p>
-    <h3>Цель:</h3>
+    <h2>Сложность: <span class="difficulty">{{ task.difficult }}</span></h2>
+    <h3>Цель: Перемести персонажа к финишу</h3>
     <p>{{ task.text_exercise }}</p>
     <h3>Подсказка:</h3>
     <p>{{ task.clue }}</p>
