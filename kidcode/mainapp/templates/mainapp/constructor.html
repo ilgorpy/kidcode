@@ -1,13 +1,22 @@
 {% extends 'base.html' %}
-
-
+{% load static %}
 {% block content %}
-<form method="post", class="settings">
-    <h1>Конструктор игрового поля</h1>
-    {% csrf_token %}
 
-    <!-- Поля формы FieldsSettingsForm -->
-    <h2 class = "h2-settings">Параметры игрового поля</h2>
+<script src="{% static 'mainapp/js/gamefield.js' %}" defer></script>
+
+
+<div class = "gamefield-settings">
+    <h1>Конструктор игрового поля</h1>
+    <h2 class = "h2-settings">Выберите способ создания</h2>
+    <div class="mode-selection">
+        <button class = 'main' type="button" id="autoButton">Автоматический</button>
+        <button class = 'main' type="button" id="manualButton">Ручной</button>
+    </div>
+<form method="post", class="settings" id="manualForm">
+    {% csrf_token %}
+    
+    <h2 class="h2-settings">Параметры игрового поля</h2>
+    
     {% for field in fields_form %}
         <label class="label-settings" for="{{ field.id_for_label }}">{{ field.label }}</label><br>
         {{ field }}<br>
@@ -19,8 +28,27 @@
     {% endfor %}
     <hr>
 
-    <!-- Поля формы TaskText -->
-    <h2 class = "h2-settings">Текст задания</h2>
+    <div id="templates">
+        <img src="{% static 'mainapp/images/pixel-last.png' %}" class="template" draggable="true" id="template1">
+        <img src="{% static 'mainapp/images/cube.png' %}" class="template" draggable="true" id="template2" data-type="cube">
+        <img src="{% static 'mainapp/images/hole.png' %}" class="template" draggable="true" id="template3" data-type="hole">
+        <img src="{% static 'mainapp/images/block.png' %}" class="template" draggable="true" id="template4" data-type="block">
+    </div>
+    <hr>
+    <script>
+        const cubeImage = "{% static 'mainapp/images/cube.png' %}";
+        const holeImage = "{% static 'mainapp/images/hole.png' %}";
+        const blockImage = "{% static 'mainapp/images/block.png' %}";
+    
+    
+    </script>
+  
+</form>
+
+
+    <form method="post" class = "settings-text" id="textForm" >
+        {% csrf_token %}
+        <h2 class="h2-settings">Текст задания</h2>
     {% for field in task_form %}
         <label class="label-settings" for="{{ field.id_for_label }}">{{ field.label }}</label><br>
         {{ field }}<br>
@@ -31,10 +59,45 @@
         {% endif %}
     {% endfor %}
 
-    <!-- Кнопка для сохранения обеих форм -->
-     <div class = "buttons">
-    <button type="submit" class="main">Сохранить</button>
+    <div class="buttons">
+        <button type="submit" class="main" id = "savemanual">Сохранить</button>
+        <button type="submit" class="main" id = "saveauto" style="display: none;">Сохранить</button>
+        <button type="reset" class="clear">Очистить</button>
+        <button type = "button" class="reset" id = "generateButton" style="display: none;">Сгенерировать</button>
+    </div>
 </form>
-
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const autoButton = document.getElementById('autoButton');
+        const manualButton = document.getElementById('manualButton');
+        const savemanual = document.getElementById('savemanual');
+        const saveauto = document.getElementById('saveauto');
+        const generateButton = document.getElementById('generateButton'); 
+        
+        
+        const manualForm = document.getElementById('manualForm');
+        const autoForm = document.getElementById('autoForm');
     
+        autoButton.addEventListener('click', () => {
+            manualForm.style.display = 'none'; // Скрываем ручную форму
+            saveauto.style.display = 'block';
+            savemanual.style.display = 'none';
+            generateButton.style.display = 'block';
+        });
+    
+        manualButton.addEventListener('click', () => {
+            manualForm.style.display = 'block'; // Показываем ручную форму
+            saveauto.style.display = 'none';
+            savemanual.style.display = 'block';
+            generateButton.style.display = 'none';
+        });
+    });
+</script>
+
+
+<canvas id="gameCanvas" width="500" height="500"></canvas>  
+
 {% endblock %}
+
+

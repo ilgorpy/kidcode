@@ -32,13 +32,18 @@ class FieldsSettingsForm(forms.ModelForm):
     class Meta:
         model = GameField
         fields = ['width', 'height', 'cube', 'hole', 'block']
+
+class FieldSaveForm(forms.ModelForm):
+    class Meta:
+        model = GameField
+        fields = ['width', 'height', 'cube', 'hole', 'block', 'data']
     
     
     
 class TaskTextForm(forms.ModelForm):
       class Meta:
         model = Task
-        fields = ['difficult', 'chapter', 'level', 'text_exercise', 'clue', 'deadline']
+        fields = ['id', 'difficult', 'chapter', 'level', 'text_exercise', 'clue', 'deadline']
         labels = {
             'difficult': 'Сложность',
             'chapter': "Глава",

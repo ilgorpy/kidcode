@@ -1,17 +1,22 @@
 from django.db import connection
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from users.models import User
 from django.contrib import messages
 from mainapp.models import *
+from mainapp.gamefields import *
 from django.db.models import Q
 from django.urls import reverse, reverse_lazy
-from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm, FieldsSettingsForm, TaskTextForm
-from django.views.generic import UpdateView, CreateView, TemplateView
+from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm, FieldsSettingsForm, TaskTextForm, FieldSaveForm
+from django.views.generic import UpdateView, CreateView, TemplateView, View
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_http_methods
+from django.utils.decorators import method_decorator
 from mainapp.mixins import RoleRequiredMixin
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 @login_required
@@ -106,8 +111,7 @@ class UserNameChange(UpdateView):
     success_url = reverse_lazy("mainapp:profile")
     template_name = "mainapp/profile.html"
 
-
-class FieldsSettings(CreateView):
+class FieldsSettings(View):
     template_name = 'mainapp/constructor.html'
     model = Task
     fields = []
@@ -121,24 +125,47 @@ class FieldsSettings(CreateView):
         })
 
     def post(self, request, *args, **kwargs):
-        fields_form = FieldsSettingsForm(request.POST)
-        task_form = TaskTextForm(request.POST)
+            data = json.loads(request.body)  # Загружаем данные из JSON
+            fields_form = FieldSaveForm(data)
+            task_form = TaskTextForm(data)
+         
+            if fields_form.is_valid() and task_form.is_valid():
+                game_field = fields_form.save()
+                task = task_form.save(commit=False)
+                task.gamefield = game_field
+                task.save()
+                return JsonResponse({'status': 'success'})  # Возвращаем JSON-ответ
 
-        if fields_form.is_valid() and task_form.is_valid():
-            game_field = fields_form.save()  
-            task_data = task_form.cleaned_data  
-            task_data['gamefield'] = game_field  
-            task = Task.objects.create(**task_data) 
-            messages.success(self.request, "Уровень успешно создан!")  
-            return redirect('mainapp:constructor')
-        else:
-            # Если есть ошибки, вернем формы с сообщениями об ошибках
-            return render(request, self.template_name, {
-                'fields_form': fields_form,
-                'task_form': task_form
-            })
+            return JsonResponse({'status': 'errorrrr', 'errors': fields_form.errors}, status=400)
+
+
+
+def get_chapters(request):
+    chapters = Task.objects.values('chapter').distinct()
+    chapter_list = [chapter['chapter'] for chapter in chapters]
+    return JsonResponse(chapter_list, safe=False)
+
+def get_levels(request, chapter_name):
+    levels = Task.objects.filter(chapter=chapter_name).values('level')
+    task_id = Task.objects.filter(chapter=chapter_name).values('id')
+    task_id_list = [task['id'] for task in task_id]
+    level_list = [level['level'] for level in levels]
+    result = dict(zip(task_id_list, level_list))
+    print()
+
+    print(level_list)
+    return JsonResponse(result, safe=False)
+
+
+    
+class Task1(View):
+    model = Task
+    form_class = TaskTextForm
+    template_name = 'mainapp/task.html'
+    def get(self, request, pk):
+        task = get_object_or_404(Task, pk=pk)
+        return render(request, 'mainapp/task.html', {'task': task})
     
 
-
-def task(request):
-    return render(request, 'mainapp/task.html')
+# def task(request):
+#     return render(request, 'mainapp/task.html')

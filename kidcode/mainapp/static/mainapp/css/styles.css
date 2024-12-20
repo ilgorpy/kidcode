@@ -234,10 +234,10 @@ a{
 
 /* Сайдбар */
 #sidebar {
-  position: fixed;
-  top: 75px;  /* Выдвигаем сайдбар ниже шапки */
-  left: -250px; /* Начальная позиция скрытого сайдбара */
-  width: 250px;
+  position: absolute;
+  top: 76px;  /* Выдвигаем сайдбар ниже шапки */
+  left: -350px; /* Начальная позиция скрытого сайдбара */
+  width: 350px;
   height: 100%;
   background-color: #22231E;
   color: white;
@@ -245,6 +245,10 @@ a{
   z-index: 5; /* Сайдбар будет под шапкой, но выше основного контента */
   padding-top: 20px;
   
+}
+
+.sidebar h1{
+  padding: 10px;
 }
 
 /* Ссылки в сайдбаре */
@@ -276,12 +280,12 @@ p.logo_name{
 
 /* Когда сайдбар открыт */
 .sidebar.open {
-  width: 250px;
+  width: 350px;
 }
 
 /* Контент смещается, когда сайдбар открыт */
 body.sidebar-open {
-  margin-left: 250px;
+  margin-left: 350px;
 }
 
 .content-text{
@@ -356,6 +360,22 @@ button.reset{
   width: 120px;
   height: 50px;
   padding: 10px;
+  display: hidden;
+  align-self: center;
+  border: none;
+  border-radius: 4px;
+  background-color: #b0db15; /* Ярко-зеленый цвет кнопки */
+  color: #ffffff;
+  font-family: monocraft;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.clear{
+  width: 120px;
+  height: 50px;
+  padding: 10px;
   padding-left: 10px;
   align-self: center;
   border: 2px solid #A62714;
@@ -369,7 +389,7 @@ button.reset{
 }
 
 .buttons{
-  margin-top: 30px;
+  margin-top: auto;
 }
 
 h1.h{
@@ -530,24 +550,27 @@ form.change{
   background-color: #45a049;
 }
 
-form.settings{
+.gamefield-settings{
   padding-top: 20px;
   padding-left: 40px; 
   padding-right: 40px; 
-  height: 100%;
   position: absolute;
   left: 0px;
   top: 75px;
   background-color: #22231E;
-  width: 25%;
+  width: 400px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 }
 
-form.settings h1{
+
+.gamefield-settings h1{
   font-family: monocraft;
     font-size: 24px;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
     margin-top: 20px;
-    margin-bottom: 40px;
     text-align: center;
 }
 
@@ -565,7 +588,7 @@ form.settings h1{
   margin-bottom: 10px;
 }
 
-#id_width.form-input, #id_height.form-input, #id_holes.form-input, #id_cubes.form-input, #id_blocks.form-input{
+#id_width.form-input, #id_height.form-input, #id_hole.form-input, #id_cube.form-input, #id_block.form-input, #id_difficult.form-input, #id_level.form-input, #id_chapter.form-input, #id_deadline.form-input{
   width: 230px;
   height: 30px;
   padding: 10px;
@@ -577,4 +600,49 @@ form.settings h1{
   outline: none;
   box-sizing: border-box;
   font-size: 14px;
+}
+ #id_text_exercise.form-input, #id_clue.form-input{
+  padding: 0px;
+  margin-bottom: 20px;
+  border: 1px solid #adadad;
+  border-radius: 4px;
+  background-color: #333;
+  color: #fff;
+  outline: none;
+  box-sizing: border-box;
+  font-size: 14px;
+ }
+
+ #gameCanvas {
+  border: 3px solid #ccc;
+  background: transparent;
+  position: absolute;
+  left: calc(400px + 35%);
+  right: 20%;
+  
+}
+
+#templates {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.template {
+  width: 60px;
+  height: 60px;
+  cursor: grab;
+}
+
+.task-container{
+  padding-top: 20px;
+  padding-left: 40px; 
+  padding-right: 40px; 
+  position: absolute;
+  left: 0px;
+  top: 75px;
+  background-color: #22231E;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 }
