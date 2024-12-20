@@ -35,6 +35,44 @@ document.addEventListener('DOMContentLoaded', () => {
     let maxHoles = parseInt(holeInput.value, 10) || 0;
     let maxBlocks = parseInt(blockInput.value, 10) || 0;
 
+ 
+        const manualButton = document.getElementById('manualButton');
+        const manualForm = document.getElementById('manualForm');
+    
+        autoButton.addEventListener('click', () => {
+            manualForm.style.display = 'none'; // Скрываем ручную форму
+            savemanual.id = 'saveauto';
+            generateButton.style.display = 'block';
+            canvas.width = null;
+            canvas.height = null;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+    
+        // manualButton.addEventListener('click', () => {
+        //     manualForm.style.display = 'block'; // Показываем ручную форму
+        //     saveauto.id = 'savemanual';
+        //     generateButton.style.display = 'none';
+        //     canvas.width = null;
+        //     canvas.height = null;
+        //     ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // });
+        manualButton.addEventListener('click', () => {
+            // Показываем ручную форму
+            manualForm.style.display = 'block';
+            
+            // Скрываем кнопку генерации
+            generateButton.style.display = 'none';
+            saveauto.id = 'savemanual';
+            // Очищаем Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+            
+        
+            // Устанавливаем новый идентификатор через атрибут data
+            saveauto.setAttribute('data-mode', 'manual');
+        });
+        
+
     // Слушатели для обновления лимитов при изменении полей ввода
     cubeInput.addEventListener('input', () => {
         maxCubes = parseInt(cubeInput.value, 10) || 0;
