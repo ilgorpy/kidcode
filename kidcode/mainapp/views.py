@@ -96,18 +96,39 @@ class Journal(RoleRequiredMixin, TemplateView):
 def index(request):
     return redirect('users/login')
 
-class UserPasswordChange(PasswordChangeView):
-    form_class = UserPasswordChangeForm
-    template_name = "mainapp/profile.html"
-    success_url = reverse_lazy("mainapp:profile")   
-    def form_valid(self, form):
-        messages.success(self.request, "Пароль успешно изменён!")
-        return super().form_valid(form)
 
-class UserNameChange(UpdateView):
-    form_class = UserNameChangeForm
-    success_url = reverse_lazy("mainapp:profile")
+class UserProfileChangeView(View):
+    form_class = UserProfileChangeForm
     template_name = "mainapp/profile.html"
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            # Смена имени
+            name = form.cleaned_data.get('name')
+            if name:
+                request.user.name = name  # или request.user.first_name/last_name в зависимости от ваших требований
+                request.user.save()
+                messages.success(request, "Имя успешно изменено!")
+
+            # Смена пароля
+            new_password1 = form.cleaned_data.get('new_password1')
+            new_password2 = form.cleaned_data.get('new_password2')
+            if new_password1:  # Проверяем только если новое имя пароля заполнено
+                if new_password1 == new_password2:
+                    request.user.set_password(new_password1)
+                    request.user.save()
+                    messages.success(request, "Пароль успешно изменён!")
+                else:
+                    messages.error(request, "Пароли не совпадают!")
+
+            return redirect('mainapp:profile')
+
+        return render(request, self.template_name, {'form': form})
 
 class FieldsSettings(View):
     template_name = 'mainapp/constructor.html'
@@ -141,6 +162,7 @@ class FieldsSettings(View):
 def get_chapters(request):
     chapters = Task.objects.values('chapter').distinct()
     chapter_list = [chapter['chapter'] for chapter in chapters]
+    print(chapter_list)
     return JsonResponse(chapter_list, safe=False)
 
 def get_levels(request, chapter_name):
@@ -149,6 +171,7 @@ def get_levels(request, chapter_name):
     task_id_list = [task['id'] for task in task_id]
     level_list = [level['level'] for level in levels]
     result = dict(zip(task_id_list, level_list))
+    print(result)
     return JsonResponse(result, safe=False)
 
 

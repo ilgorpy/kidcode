@@ -14,12 +14,22 @@ class RecordForm(forms.Form):
     level = forms.CharField(label="Уровень", widget = forms.TextInput(attrs={'class': 'form-input'}), required=False)
 
 
-class UserNameChangeForm(forms.Form):
-    name = forms.CharField(label="Имя", widget = forms.TextInput(attrs={'class': 'form-input'}), required=False)
+from django import forms
 
-class UserPasswordChangeForm(SetPasswordForm):
-    new_password1 = forms.CharField(label="Новый пароль", widget=forms.PasswordInput(attrs={'class': 'form-input'}))
-    new_password2 = forms.CharField(label="Подтверждение пароля", widget=forms.PasswordInput(attrs={'class': 'form-input'}))
+class UserProfileChangeForm(forms.Form):
+    name = forms.CharField(label="Имя", widget=forms.TextInput(attrs={'class': 'form-input'}), required=False)
+    new_password1 = forms.CharField(label="Новый пароль", widget=forms.PasswordInput(attrs={'class': 'form-input'}), required=False)
+    new_password2 = forms.CharField(label="Подтверждение пароля", widget=forms.PasswordInput(attrs={'class': 'form-input'}), required=False)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password1 = cleaned_data.get("new_password1")
+        new_password2 = cleaned_data.get("new_password2")
+
+        if new_password1 or new_password2:  # Если хотя бы одно поле для пароля заполнено
+            if new_password1 != new_password2:
+                self.add_error('new_password2', "Пароли не совпадают.")
+
 
 
 class FieldsSettingsForm(forms.ModelForm):
