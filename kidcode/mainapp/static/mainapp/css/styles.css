@@ -234,10 +234,10 @@ a{
 
 /* Сайдбар */
 #sidebar {
-  position: fixed;
-  top: 75px;  /* Выдвигаем сайдбар ниже шапки */
-  left: -250px; /* Начальная позиция скрытого сайдбара */
-  width: 250px;
+  position: absolute;
+  top: 76px;  /* Выдвигаем сайдбар ниже шапки */
+  left: -350px; /* Начальная позиция скрытого сайдбара */
+  width: 350px;
   height: 100%;
   background-color: #22231E;
   color: white;
@@ -245,6 +245,10 @@ a{
   z-index: 5; /* Сайдбар будет под шапкой, но выше основного контента */
   padding-top: 20px;
   
+}
+
+.sidebar h1{
+  padding: 10px;
 }
 
 /* Ссылки в сайдбаре */
@@ -276,12 +280,12 @@ p.logo_name{
 
 /* Когда сайдбар открыт */
 .sidebar.open {
-  width: 250px;
+  width: 350px;
 }
 
 /* Контент смещается, когда сайдбар открыт */
 body.sidebar-open {
-  margin-left: 250px;
+  margin-left: 350px;
 }
 
 .content-text{
@@ -555,8 +559,10 @@ form.change{
   top: 75px;
   background-color: #22231E;
   width: 400px;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: auto;
 }
 
 
@@ -625,4 +631,18 @@ form.change{
   width: 60px;
   height: 60px;
   cursor: grab;
+}
+
+.task-container{
+  padding-top: 20px;
+  padding-left: 40px; 
+  padding-right: 40px; 
+  position: absolute;
+  left: 0px;
+  top: 75px;
+  background-color: #22231E;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 }
