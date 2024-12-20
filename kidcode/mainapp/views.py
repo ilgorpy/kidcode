@@ -147,9 +147,14 @@ def get_chapters(request):
 
 def get_levels(request, chapter_name):
     levels = Task.objects.filter(chapter=chapter_name).values('level')
+    task_id = Task.objects.filter(chapter=chapter_name).values('id')
+    task_id_list = [task['id'] for task in task_id]
     level_list = [level['level'] for level in levels]
+    result = dict(zip(task_id_list, level_list))
+    print()
+
     print(level_list)
-    return JsonResponse(level_list, safe=False)
+    return JsonResponse(result, safe=False)
 
 
     

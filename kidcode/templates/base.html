@@ -90,7 +90,7 @@
     function loadLevels(chapterName) {
         const dropdown = document.getElementById(chapterName);
         dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-
+    
         // Если уровни еще не загружены, загружаем их
         if (dropdown.children.length === 0) {
             fetch(`/levels/${chapterName}/`)
@@ -101,12 +101,15 @@
                     return response.json();
                 })
                 .then(data => {
-                    data.forEach(level => {
+                    // data - это объект, где ключи - это id задач, а значения - названия уровней
+                    Object.entries(data).forEach(([task_id, levelName]) => {
                         const li = document.createElement('li');
                         const link = document.createElement('a');
-                        link.href = '#';
-                        link.textContent = level; // Устанавливаем текст ссылки
-
+    
+                        // Устанавливаем href для перенаправления на страницу задачи
+                        link.href = `/task/${task_id}`; // Используем taskId как идентификатор задачи
+                        link.textContent = levelName; // Устанавливаем текст ссылки как название уровня
+    
                         li.appendChild(link); // Добавляем ссылку в элемент li
                         dropdown.appendChild(li);
                     });
@@ -116,6 +119,10 @@
                 });
         }
     }
+    
+    
+    
+    
 </script>
                 
             

@@ -43,7 +43,7 @@ class FieldSaveForm(forms.ModelForm):
 class TaskTextForm(forms.ModelForm):
       class Meta:
         model = Task
-        fields = ['difficult', 'chapter', 'level', 'text_exercise', 'clue', 'deadline']
+        fields = ['id', 'difficult', 'chapter', 'level', 'text_exercise', 'clue', 'deadline']
         labels = {
             'difficult': 'Сложность',
             'chapter': "Глава",
