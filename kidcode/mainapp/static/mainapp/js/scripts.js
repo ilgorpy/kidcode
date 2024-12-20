@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", function() {
     loadChapters();  // Загружаем главы при загрузке страницы
 });
 
+// const open = document.getElementsByClassName('chapter-container');
+
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     sidebar.classList.toggle('active'); // Переключаем видимость боковой панели
@@ -25,7 +27,7 @@ function loadChapters() {
                 a.href = '#';
                 li.className = 'chapter-container';
                 a.className = 'dropdown-toggle';
-                a.onclick = () => loadLevels(chapter);
+                li.onclick = () => loadLevels(chapter);
 
                 li.appendChild(a);
                 const ul = document.createElement('ul');

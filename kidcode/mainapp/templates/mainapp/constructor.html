@@ -62,37 +62,12 @@
 
     <div class="buttons">
         <button type="submit" class="main" id = "savemanual">Сохранить</button>
+        <button type="submit" class="main" id = "saveauto" style="display: none;">Сохранить</button>
         <button type="reset" class="clear">Очистить</button>
         <button type = "button" class="reset" id = "generateButton" style="display: none;">Сгенерировать</button>
     </div>
 </form>
 </div>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const autoButton = document.getElementById('autoButton');
-        const manualButton = document.getElementById('manualButton');
-        const savemanual = document.getElementById('savemanual');
-        const generateButton = document.getElementById('generateButton'); 
-        
-        
-        const manualForm = document.getElementById('manualForm');
-        const autoForm = document.getElementById('autoForm');
-    
-        autoButton.addEventListener('click', () => {
-            manualForm.style.display = 'none'; // Скрываем ручную форму
-            savemanual.id = 'saveauto';
-            generateButton.style.display = 'block';
-        });
-    
-        manualButton.addEventListener('click', () => {
-            manualForm.style.display = 'block'; // Показываем ручную форму
-            saveauto.id = 'savemanual';
-            generateButton.style.display = 'none';
-        });
-    });
-</script>
-
-
 <canvas id="gameCanvas" width="500" height="500"></canvas>  
 
 {% endblock %}

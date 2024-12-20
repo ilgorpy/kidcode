@@ -232,6 +232,10 @@ a{
   margin-left: 20px;
 }
 
+.sidebar-toggle:hover {
+  color:rgba(0, 0, 0, 0.5)
+}
+
 /* Сайдбар */
 #sidebar {
   position: absolute;
@@ -239,7 +243,7 @@ a{
   left: -350px; /* Начальная позиция скрытого сайдбара */
   width: 350px;
   height: 100%;
-  background-color: #4E4D4D;
+  background-color: #444343;
   color: white;
   transition: left 0.3s ease;
   z-index: 5; /* Сайдбар будет под шапкой, но выше основного контента */
@@ -647,10 +651,11 @@ form.change{
   left: 0px;
   top: 75px;
   background-color: #22231E;
-  width: 400px;
+  width: 500px;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  overflow-y: scroll;
+  height: 100vh;
 }
 
 #chapter-list{
@@ -659,11 +664,12 @@ form.change{
 }
 
 .chapter-container{
-  border: #ffffff 1px solid;
-  min-height: 50px;
+  border: #ffffff 0.5px solid;
+  min-height: 25px;
   display: flex;
-  justify-content: center;
-  
+  padding: 10px; /* Центровка по горизонтали */
+  justify-content: center; /* Центровка по вертикали */
+  flex-direction: column;
 }
 
 #manualButton{
@@ -679,4 +685,44 @@ form.change{
 
 hr{
   width: 100%;
+  color: #aaaaaa;
+}
+
+.task-change {
+  text-align: center;
+  color: white;
+  font-family: monocraft;
+  margin-bottom: 20px;
+}
+
+.task-change h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.task-change p{
+  font-size: 20px;
+}
+
+
+.button.back {
+  background-color: #732724;
+  color: #fff;
+  float: left;
+}
+
+.button.forward {
+  background-color: #008000;
+  color: #fff;
+  float: right;
+}
+
+.arrow {
+  margin: 0 8px;
+  font-weight: bold;
+}
+
+.difficulty{
+  font-family: monocraft;
+  color: #0EA524;
 }
