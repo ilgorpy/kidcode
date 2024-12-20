@@ -248,8 +248,11 @@ a{
 }
 
 #sidebar.active h1{
+  font-size: 30px;
   margin: 10px;
   text-align: center;
+  font-family: monocraft;
+  text-wrap: nowrap;
 }
 
 /* Ссылки в сайдбаре */
@@ -391,6 +394,7 @@ button.clear{
 
 .buttons{
   margin-top: auto;
+  margin-bottom: 20px;
 }
 
 h1.h{
@@ -555,6 +559,7 @@ form.change{
   padding-top: 20px;
   padding-left: 40px; 
   padding-right: 40px; 
+  padding-bottom: 20px;
   position: absolute;
   left: 0px;
   top: 75px;
@@ -590,7 +595,7 @@ form.change{
 }
 
 #id_width.form-input, #id_height.form-input, #id_hole.form-input, #id_cube.form-input, #id_block.form-input, #id_difficult.form-input, #id_level.form-input, #id_chapter.form-input, #id_deadline.form-input{
-  width: 230px;
+  width: 175px;
   height: 30px;
   padding: 10px;
   margin-bottom: 20px;
@@ -648,6 +653,30 @@ form.change{
   overflow: auto;
 }
 
+#chapter-list{
+  padding-inline-start: 0px;
+  min-height: 40px;
+}
+
 .chapter-container{
   border: #ffffff 1px solid;
+  min-height: 50px;
+  display: flex;
+  justify-content: center;
+  
+}
+
+#manualButton{
+  float: right;
+  width: 175px;
+}
+
+#autoButton{
+  float: left;
+  width: 175px;
+
+}
+
+hr{
+  width: 100%;
 }
