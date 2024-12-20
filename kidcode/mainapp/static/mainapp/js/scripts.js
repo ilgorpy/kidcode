@@ -23,6 +23,8 @@ function loadChapters() {
                 const a = document.createElement('a');
                 a.textContent = chapter;
                 a.href = '#';
+                li.className = 'chapter-container';
+                a.className = 'dropdown-toggle';
                 a.onclick = () => loadLevels(chapter);
 
                 li.appendChild(a);

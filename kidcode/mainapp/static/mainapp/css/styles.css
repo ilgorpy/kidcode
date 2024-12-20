@@ -239,7 +239,7 @@ a{
   left: -350px; /* Начальная позиция скрытого сайдбара */
   width: 350px;
   height: 100%;
-  background-color: #22231E;
+  background-color: #4E4D4D;
   color: white;
   transition: left 0.3s ease;
   z-index: 5; /* Сайдбар будет под шапкой, но выше основного контента */
@@ -247,8 +247,9 @@ a{
   
 }
 
-.sidebar h1{
-  padding: 10px;
+#sidebar.active h1{
+  margin: 10px;
+  text-align: center;
 }
 
 /* Ссылки в сайдбаре */
@@ -645,4 +646,8 @@ form.change{
   display: flex;
   flex-direction: column;
   overflow: auto;
+}
+
+.chapter-container{
+  border: #ffffff 1px solid;
 }
