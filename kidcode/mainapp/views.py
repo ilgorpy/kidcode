@@ -1,22 +1,28 @@
 from django.db import connection
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect, render, get_object_or_404
-from users.models import User
-from django.contrib import messages
-from mainapp.models import *
-from mainapp.gamefields import *
-from django.db.models import Q
-from django.urls import reverse, reverse_lazy
-from .forms import  RecordForm, UserNameChangeForm, UserPasswordChangeForm, JournalForm, FieldsSettingsForm, TaskTextForm, FieldSaveForm
-from django.views.generic import UpdateView, CreateView, TemplateView, View
-from django.contrib.auth.views import PasswordChangeView
+from django.urls import reverse_lazy
+from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST, require_http_methods
-from django.utils.decorators import method_decorator
-from mainapp.mixins import RoleRequiredMixin
+from django.shortcuts import redirect, render, get_object_or_404
+
+from django.db.models import Q
+from django.contrib import messages
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.views import PasswordChangeView
+from django.views.generic import View,UpdateView, TemplateView
+
 import json
+from .forms import *
+from mainapp.models import *
+from mainapp.mixins import RoleRequiredMixin
+
+
+class Task1(View):
+    model = Task
+    form_class = TaskTextForm
+    template_name = 'mainapp/task.html'
+    def get(self, request, pk):
+        task = get_object_or_404(Task, pk=pk)
+        return render(request, 'mainapp/task.html', {'task': task})
 
 
 @login_required
@@ -88,15 +94,7 @@ class Journal(RoleRequiredMixin, TemplateView):
    
 
 def index(request):
-    return HttpResponse("Главная страница")
-
-
-def constructor(request):
-    return render(request, 'mainapp/constructor.html')
-
-
-def profile(request):
-    return render(request, 'mainapp/profile.html')
+    return redirect('users/login')
 
 class UserPasswordChange(PasswordChangeView):
     form_class = UserPasswordChangeForm
@@ -151,21 +149,9 @@ def get_levels(request, chapter_name):
     task_id_list = [task['id'] for task in task_id]
     level_list = [level['level'] for level in levels]
     result = dict(zip(task_id_list, level_list))
-    print()
-
-    print(level_list)
     return JsonResponse(result, safe=False)
 
 
     
-class Task1(View):
-    model = Task
-    form_class = TaskTextForm
-    template_name = 'mainapp/task.html'
-    def get(self, request, pk):
-        task = get_object_or_404(Task, pk=pk)
-        return render(request, 'mainapp/task.html', {'task': task})
-    
 
-# def task(request):
-#     return render(request, 'mainapp/task.html')
+    
