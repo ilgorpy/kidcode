@@ -655,6 +655,7 @@ form.change{
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
+  overflow-x: hidden;
   height: 100vh;
 }
 

@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
 // const open = document.getElementsByClassName('chapter-container');
 
 function toggleSidebar() {
+    loadChapters();
     const sidebar = document.getElementById('sidebar');
     sidebar.classList.toggle('active'); // Переключаем видимость боковой панели
 }
