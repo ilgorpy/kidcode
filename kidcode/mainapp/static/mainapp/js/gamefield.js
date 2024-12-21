@@ -41,36 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
     
         autoButton.addEventListener('click', () => {
             manualForm.style.display = 'none'; // Скрываем ручную форму
-            savemanual.id = 'saveauto';
             generateButton.style.display = 'block';
-            canvas.width = null;
-            canvas.height = null;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            saveauto.style.display = 'block';
+            savemanual.style.display = 'none';
         });
     
-        // manualButton.addEventListener('click', () => {
-        //     manualForm.style.display = 'block'; // Показываем ручную форму
-        //     saveauto.id = 'savemanual';
-        //     generateButton.style.display = 'none';
-        //     canvas.width = null;
-        //     canvas.height = null;
-        //     ctx.clearRect(0, 0, canvas.width, canvas.height);
-        // });
         manualButton.addEventListener('click', () => {
-            // Показываем ручную форму
-            manualForm.style.display = 'block';
-            
-            // Скрываем кнопку генерации
+            manualForm.style.display = 'block'; // Показываем ручную форму
             generateButton.style.display = 'none';
-            saveauto.id = 'savemanual';
-            // Очищаем Canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-            
-        
-            // Устанавливаем новый идентификатор через атрибут data
-            saveauto.setAttribute('data-mode', 'manual');
+            saveauto.style.display = 'none';
+            savemanual.style.display = 'block';
         });
+       
         
 
     // Слушатели для обновления лимитов при изменении полей ввода
@@ -341,6 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Добавляем дополнительные данные (например, координаты из canvas)
         jsonData.data = placedObjects; 
+        console.log("Я вызываюсь почему то блять")
         console.log(jsonData);
         // Отправляем данные через fetch
         fetch('/constructor/', {
@@ -371,8 +354,10 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.forEach((value, key) => {
             jsonData[key] = value;
         });
+        console.log("jsonData:", jsonData); // Добавьте это для отладки
+        console.log("randomdata:" , randomData);
         Object.assign(jsonData, randomData);
-        jsonData.iconPosition = placedObjects; 
+        jsonData.data = placedObjects; 
         console.log(jsonData);
         // Отправляем данные через fetch
         fetch('/constructor/', {

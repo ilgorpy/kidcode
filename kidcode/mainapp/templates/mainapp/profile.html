@@ -7,15 +7,20 @@
 
 <h1 class = "h">Детали профиля</h1>
 
-<form method="post"  enctype="multipart/form-data" class = "change">
+<form method="post" enctype="multipart/form-data" class="change">
     {% csrf_token %}
     <div class="form-error">{{ form.non_field_errors }}</div>
     {% for f in form %}
-    <label class="password-label" for="{{ f.id_for_label }}">{{f.label}} </label>{{ f }}
-    <div class="form-error">{{ f.errors }}</div>
+        <label class="password-label" for="{{ f.id_for_label }}">{{ f.label }} </label>{{ f }}
+        <div class="form-error">{{ f.errors }}</div>
     {% endfor %}    
 
     <button type="submit" class="main">Сохранить</button>
+</form>
+
+
+
+
     
 </form>
 <div id="popup-message" class="popup hidden">
