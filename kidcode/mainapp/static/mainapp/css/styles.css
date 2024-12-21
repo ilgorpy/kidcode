@@ -727,3 +727,16 @@ hr{
   font-family: monocraft;
   color: #0EA524;
 }
+
+#gamecanvas{
+  border: 3px solid #ccc;
+  background: transparent;
+ 
+} 
+
+.game-area {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

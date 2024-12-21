@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 
 {% block content %}
 
@@ -30,5 +30,10 @@
     </div>
 </div>
 
+<div class="game-area">
+    <canvas id="gameCanvas" ></canvas>
+</div>
 
+
+<script src="{% static 'mainapp/js/task.js' %}" defer></script>
 {% endblock %}

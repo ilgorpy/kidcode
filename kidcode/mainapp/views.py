@@ -17,12 +17,43 @@ from mainapp.mixins import RoleRequiredMixin
 
 
 class Task1(View):
-    model = Task
-    form_class = TaskTextForm
     template_name = 'mainapp/task.html'
+
     def get(self, request, pk):
+        if request.path.endswith('/data/'):
+            return self.get_game_field_data(request, pk)
+        else:
+            return self.get_task_view(request, pk)
+
+    def get_task_view(self, request, pk):
+        # Загрузка задачи
         task = get_object_or_404(Task, pk=pk)
-        return render(request, 'mainapp/task.html', {'task': task})
+
+        # Используем связь task.gamefield_id для получения игрового поля
+        game_field = get_object_or_404(GameField, id=task.gamefield_id)
+
+        context = {
+            'task': task,
+            'game_field': game_field,
+        }
+        return render(request, self.template_name, context)
+
+    def get_game_field_data(self, request, pk):
+        """
+        Обработка AJAX-запросов для получения данных игрового поля.
+        """
+        # Загружаем данные задачи
+        task = get_object_or_404(Task, pk=pk)
+
+        # Используем связь task.gamefield_id для получения игрового поля
+        game_field = get_object_or_404(GameField, id=task.gamefield_id)
+
+        # Формируем JSON-ответ
+        return JsonResponse({
+            'data': game_field.data,
+            'width': game_field.width,
+            'height': game_field.height,
+        })
 
 
 @login_required
