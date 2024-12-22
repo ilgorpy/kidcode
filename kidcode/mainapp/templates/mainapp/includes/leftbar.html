@@ -1,15 +1,18 @@
+{% load static %}
+<script src="{% static 'mainapp/js/leftbar.js' %}" defer></script>
 <div class="content-text">
 <h1>Профиль</h1>
 {% if user.is_authenticated %}
 				<li class="last">{{user.email}}</li>
+                <li class = "last">{{user.name}}</li>
 {% endif %}
 
-        <li><a href = "{% url 'mainapp:profile' %}" class="profile_btn">Детали профиля</a></li>
+       <a href = "{% url 'mainapp:profile' %}" class="profile_btn"><i class="fa fa-user" aria-hidden="true"></i>Детали профиля</a>
     {% if user.is_staff %}       
-        <li><a href="{% url 'mainapp:journal' %}" class="profile_btn">Журнал</a></li>       
+        <li><a href="{% url 'mainapp:journal' %}" class="profile_btn"><i class="fa fa-table" aria-hidden="true"></i>Журнал</a></li>       
     {% else %}
-        <li><a href="{% url 'mainapp:record' %}" class="profile_btn">Успеваемость</a></li>       
+        <li><a href="{% url 'mainapp:record' %}" class="profile_btn"><i class="fa fa-table" aria-hidden="true"></i>Успеваемость</a></li>       
     {% endif %}
 
-<a href="{% url 'users:logout' %}" class="profile_btn">Выйти</a>
+<a href="{% url 'users:logout' %}" class="profile_btn"><i class="fa fa-sign-out" aria-hidden="true"></i>Выйти</a>
 </div>
