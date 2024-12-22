@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Настройка элементов
+    //Поля для canvas
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     
@@ -8,6 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // URL для загрузки данных игрового поля
     const gameDataUrl = `/task/${taskId}/data/`;
+
+    //Элементы для подсказки
+    const clueButton = document.getElementById('clueButton');
+    const clueModal = document.getElementById('clueModal');
+    const closeClue = document.getElementById('closeClue');
+    const clueText = document.getElementById('clueText');
+
+    // Элементы для учебника
+    const manualButton = document.getElementById('guideButton');
+    const manualModal = document.getElementById('manualModal');
+    const closeManual = document.getElementById('closeManual');
 
     // Загружаем JSON-данные игрового поля
     fetch(gameDataUrl)
@@ -80,4 +91,41 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.stroke();
         }
     }
+       // Открытие и закрытие модального окна для подсказки
+       clueButton.addEventListener('click', async () => {
+        try {
+            const response = await fetch(`/task/${taskId}/clue/`);
+            if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+            const data = await response.json();
+            clueText.textContent = data.clue; // Отображение подсказки
+        } catch (error) {
+            clueText.textContent = 'Ошибка загрузки подсказки.';
+            console.error('Ошибка загрузки подсказки:', error);
+        }
+        clueModal.style.display = 'block';
+    });
+
+    closeClue.addEventListener('click', () => {
+        clueModal.style.display = 'none';
+    });
+
+    // Открытие и закрытие модального окна для учебника
+    manualButton.addEventListener('click', () => {
+        manualModal.style.display = 'block';
+    });
+
+    closeManual.addEventListener('click', () => {
+        manualModal.style.display = 'none';
+    });
+
+    // Закрытие модальных окон при клике вне их
+    window.addEventListener('click', (event) => {
+        if (event.target === clueModal) {
+            clueModal.style.display = 'none';
+        }
+        if (event.target === manualModal) {
+            manualModal.style.display = 'none';
+        }
+    });
+
 });

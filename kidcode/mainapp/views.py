@@ -22,6 +22,8 @@ class Task1(View):
     def get(self, request, pk):
         if request.path.endswith('/data/'):
             return self.get_game_field_data(request, pk)
+        elif request.path.endswith('/clue/'):
+            return self.get_clue(request, pk)
         else:
             return self.get_task_view(request, pk)
 
@@ -54,6 +56,13 @@ class Task1(View):
             'width': game_field.width,
             'height': game_field.height,
         })
+    
+    def get_clue(self, request, pk):
+        """
+        Возвращает подсказку задачи в формате JSON.
+        """
+        task = get_object_or_404(Task, pk=pk)
+        return JsonResponse({'clue': task.clue})
 
 
 @login_required
