@@ -3,6 +3,7 @@
 {% block content %}
 
 {% include  'mainapp/includes/leftbar.html' %}
+<script src="{% static 'mainapp/js/messages.js' %}"></script>
 <h1 class = "h">Журнал</h1>
 <form method="get" enctype="multipart/form-data" class = "filter">
   {% csrf_token %}
@@ -62,5 +63,24 @@
     </tbody>
   </table>
 </div>
+
+<div id="popup-message" class="popup hidden">
+  <p id="popup-text"></p>
+</div>
+
+<script type="application/json" id="messages-json">
+  [
+      {% for message in messages %}
+          "{{ message|escapejs }}"{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+  ]
+</script>
+
+<script>
+  const messages = JSON.parse(document.getElementById('messages-json').textContent);
+  messages.forEach(message => {
+      showPopup(message);
+  });
+</script>
 <script src="{% static 'mainapp/js/update_grade.js' %}"></script>
 {% endblock %}

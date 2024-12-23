@@ -91,16 +91,18 @@ def record(request):
     if form.is_valid():
         grade = form.cleaned_data.get('grade')
         level = form.cleaned_data.get('level')
-
         if grade:
             filters &= Q(grade=grade)
         if level:
             filters &= Q(level=level)
 
         record_data = list(RecordView.objects.filter(filters))
-
     else:
         record_data = list(RecordView.objects.filter(filters))
+
+    if record_data == []:
+            messages.error(request, "По вашему запросу ничего не найдено")
+    
     
     return render(request, 'mainapp/record.html', {'record_data': record_data, 'form': form})
 
@@ -127,9 +129,13 @@ class Journal(RoleRequiredMixin, TemplateView):
 
             journal_data = list(JournalView.objects.filter(filters))
 
+
         else:
             journal_data = list(JournalView.objects.all())
-        
+      
+        if journal_data == []:
+            messages.error(request, "По вашему запросу ничего не найдено")
+
         return render(request,'mainapp/journal.html', {'journal_data': journal_data, 'form': form})
    
 
@@ -151,9 +157,11 @@ class UserProfileChangeView(View):
             # Смена имени
             name = form.cleaned_data.get('name')
             if name:
-                request.user.name = name  # или request.user.first_name/last_name в зависимости от ваших требований
+                request.user.name = name  
                 request.user.save()
                 messages.success(request, "Имя успешно изменено!")
+            else:
+                messages.error(request, "Заполните поле имени!")
 
             # Смена пароля
             new_password1 = form.cleaned_data.get('new_password1')
@@ -193,7 +201,10 @@ class FieldsSettings(View):
                 task = task_form.save(commit=False)
                 task.gamefield = game_field
                 task.save()
+                messages.success(request, "Задача успешно сохранена!")
                 return JsonResponse({'status': 'success'})  # Возвращаем JSON-ответ
+            else:
+                messages.error(request, "Заполните все поля!")
 
             return JsonResponse({'status': 'errorrrr', 'errors': fields_form.errors}, status=400)
 

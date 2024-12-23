@@ -232,6 +232,10 @@ a.profile_btn{
   font-weight: bold;
 }
 
+#logout:hover{
+  background-color: #A62714;
+}
+
 .profile_btn.active{
   background-color: #0EA524;
 }
@@ -387,7 +391,7 @@ button.main{
   background-color: #0EA524; 
   color: #ffffff;
   font-family: monocraft;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -395,7 +399,7 @@ button.main{
 button.reset{
   width: 120px;
   height: 50px;
-  padding: 10px;
+  padding: 5px;
   display: hidden;
   align-self: center;
   border: none;
@@ -403,7 +407,7 @@ button.reset{
   background-color: #b0db15; 
   color: #ffffff;
   font-family: monocraft;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -419,7 +423,7 @@ button.clear{
   background: transparent; 
   color: #A62714;
   font-family: monocraft;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -427,6 +431,8 @@ button.clear{
 .buttons{
   margin-top: auto;
   margin-bottom: 20px;
+  display: flex;
+  gap:20px;
 }
 
 h1.h{
@@ -662,7 +668,6 @@ form.change{
 
 #templates {
   display: flex;
-  flex-direction: column;
   gap: 10px;
 }
 .template {

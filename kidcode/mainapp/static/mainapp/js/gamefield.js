@@ -320,11 +320,8 @@ document.addEventListener('DOMContentLoaded', () => {
         formData2.forEach((value, key) => {
             jsonData[key] = value;
         });
-
         // Добавляем дополнительные данные (например, координаты из canvas)
         jsonData.data = placedObjects; 
-        console.log("Я вызываюсь почему то блять")
-        console.log(jsonData);
         // Отправляем данные через fetch
         fetch('/constructor/', {
             method: 'POST',
@@ -354,11 +351,8 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.forEach((value, key) => {
             jsonData[key] = value;
         });
-        console.log("jsonData:", jsonData); // Добавьте это для отладки
-        console.log("randomdata:" , randomData);
         Object.assign(jsonData, randomData);
         jsonData.data = placedObjects; 
-        console.log(jsonData);
         // Отправляем данные через fetch
         fetch('/constructor/', {
             method: 'POST',
