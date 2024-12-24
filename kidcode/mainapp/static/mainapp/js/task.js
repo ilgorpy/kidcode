@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    let data = [];
     //Поля для canvas
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -8,12 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // URL для загрузки данных игрового поля
     const gameDataUrl = `/task/${taskId}/data/`;
-
+    
     //Элементы для подсказки
     const clueButton = document.getElementById('clueButton');
     const clueModal = document.getElementById('clueModal');
     const closeClue = document.getElementById('closeClue');
     const clueText = document.getElementById('clueText');
+    
+    const images = {
+        cube: new Image(),
+        hole: new Image(),
+        block: new Image(),
+        player: new Image()
+    };
 
     // Элементы для учебника
     const manualButton = document.getElementById('guideButton');
@@ -30,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(gameField => {
             // Данные игрового поля
-            const data = gameField.data;
+            data = gameField.data;
             const width = gameField.width;
             const height = gameField.height;
 
@@ -39,20 +48,18 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.height = height * 64;
 
             // Подготовка изображений
-            const images = {
-                cube: new Image(),
-                hole: new Image(),
-                block: new Image()
-            };
+            
             images.cube.src = "/static/mainapp/images/cube.png";   // Путь к изображениям
             images.hole.src = "/static/mainapp/images/hole.png";
             images.block.src = "/static/mainapp/images/block.png";
+            images.player.src = "/static/mainapp/images/pixel-last.png";
 
             // Отрисовка игрового поля
             Promise.all([
                 loadImage(images.cube),
                 loadImage(images.hole),
-                loadImage(images.block)
+                loadImage(images.block),
+                loadImage(images.player)
             ]).then(() => {
                 drawGrid(width, height);
                 data.forEach(item => {
@@ -127,5 +134,63 @@ document.addEventListener('DOMContentLoaded', () => {
             manualModal.style.display = 'none';
         }
     });
+
+    document.getElementById('startButton').addEventListener('click', async () => {
+        const code = document.getElementById('code-input').value.trim();
+        console.log('Code:', code);
+        try {
+            const response = await fetch(`/task/${taskId}/${playerId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({ code }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Ошибка HTTP: ${response.status}`);
+            }
+    
+            const dataResponse = await response.json();
+            if (dataResponse.error) {
+                alert(`Ошибка: ${dataResponse.error}`);
+            } else {
+                const { x, y } = dataResponse;
+    
+                // Обновляем координаты игрока в глобальной переменной `data`
+                const playerData = data.find(item => item.id === 'player');
+                if (playerData) {
+                    playerData.x = x ; // Преобразуем координаты в пиксели
+                    playerData.y = y;
+                }
+    
+                // Отображаем новые координаты игрока
+                document.getElementById('player-coordinates').textContent = `(${x}, ${y})`;
+    
+                // Обновляем игровое поле
+                updatePlayerPosition();
+            }
+        } catch (error) {
+            console.error('Ошибка выполнения кода:', error);
+            alert('Ошибка выполнения кода.');
+        }
+    }); 
+
+    
+
+    function updatePlayerPosition(x, y) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Перерисуем сетку
+        drawGrid(canvas.width, canvas.height);
+        console.log(data);
+        data.forEach(item => {
+           const { x, y, id } = item;
+          ctx.drawImage(images[id], x, y, 64, 64); // Рисуем объект на поле
+         });
+        
+       
+    }
 
 });

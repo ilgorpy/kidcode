@@ -32,7 +32,14 @@ class Grade(models.Model):
     code = models.ForeignKey('Code', on_delete=models.CASCADE)
 
 
+class Player(models.Model):
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, default=21)
+    game_field = models.ForeignKey('GameField', on_delete=models.CASCADE)
+    x = models.IntegerField(default=0)
+    y = models.IntegerField(default=0)
+
 class Code(models.Model):
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, default=21)
     code = models.TextField()
 
 

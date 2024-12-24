@@ -9,12 +9,14 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.views import PasswordChangeView
 from django.views.generic import View,UpdateView, TemplateView
-
+from django.views.decorators.csrf import csrf_exempt
 import json
 from .forms import *
 from mainapp.models import *
 from mainapp.mixins import RoleRequiredMixin
+from users.models import User
 
+from RestrictedPython import compile_restricted, safe_globals, utility_builtins
 
 class Task1(View):
     template_name = 'mainapp/task.html'
@@ -24,6 +26,8 @@ class Task1(View):
             return self.get_game_field_data(request, pk)
         elif request.path.endswith('/clue/'):
             return self.get_clue(request, pk)
+        elif request.path.endswith('/position/'):
+            return self.get_player_position(request, pk, request.user.id)
         else:
             return self.get_task_view(request, pk)
 
@@ -34,11 +38,39 @@ class Task1(View):
         # Используем связь task.gamefield_id для получения игрового поля
         game_field = get_object_or_404(GameField, id=task.gamefield_id)
 
+        # Инициализация начальных координат игрока по умолчанию
+        initial_x, initial_y = 0, 0
+
+        # Попытка найти игрока в данных игрового поля
+        try:
+            game_field_data = game_field.data  # Предполагается, что это уже список
+            if isinstance(game_field_data, str):
+                game_field_data = json.loads(game_field_data)  # Преобразование из строки JSON, если это строка
+            player_data = next((item for item in game_field_data if item.get('id') == 'player'), None)
+            if player_data:
+                initial_x = player_data.get('x', 0)
+                initial_y = player_data.get('y', 0)
+        except Exception as e:
+            print(f"Ошибка при обработке данных игрового поля: {e}")
+
+        # Проверяем, существует ли Player для данного пользователя и игрового поля
+        player, created = Player.objects.get_or_create(
+            user=request.user,
+            game_field=game_field,
+            defaults={'x': initial_x, 'y': initial_y}  # Используем извлеченные координаты
+        )
+
+        if created:
+            print(f"Создан новый игрок для пользователя {request.user.id} и игрового поля {game_field.id} с координатами ({initial_x}, {initial_y})")
+
         context = {
             'task': task,
             'game_field': game_field,
+            'player': player,
         }
         return render(request, self.template_name, context)
+
+
 
     def get_game_field_data(self, request, pk):
         """
@@ -63,6 +95,82 @@ class Task1(View):
         """
         task = get_object_or_404(Task, pk=pk)
         return JsonResponse({'clue': task.clue})
+    
+    def get_player_position(request, pk, user_id):
+        try:
+            player = Player.objects.get(user_id=user_id)
+            return JsonResponse({"x": player.x, "y": player.y})
+        except Player.DoesNotExist:
+            return JsonResponse({"error": "Player not found"}, status=404)
+
+    def post(self, request, pk, user_id):
+        print(f"Task ID: {pk}, Player ID: {user_id}")
+        print(f"Request Body: {request.body.decode('utf-8')}")
+         # Получаем задачу и игровое поле
+        try:
+            task = get_object_or_404(Task, pk=pk)
+            game_field = get_object_or_404(GameField, id=task.gamefield_id)
+        except Exception as e:
+            print(f"Error fetching task or game field: {e}")
+            return JsonResponse({"error": "Task or game field not found"}, status=404)
+
+        # Пытаемся получить игрока
+        try:
+            player = Player.objects.get(user_id=user_id, game_field=game_field)
+        except Player.DoesNotExist:
+            return JsonResponse({"error": "Player not found"}, status=404)
+
+        try:
+            data = json.loads(request.body)
+            user_code = data.get('code', '')
+            print(f"Received code: {user_code}")
+        except json.JSONDecodeError as e:
+            print(f"Error parsing JSON: {e}")
+            return JsonResponse({"error": "Некорректный формат данных JSON"}, status=400)
+
+        if not user_code:
+            print("Code is empty")
+            return JsonResponse({"error": "Код не предоставлен"}, status=400)
+        
+       
+
+        safe_locals = {
+            "move_down": lambda: self.move_player(player, 0, 64, game_field),
+            "move_up": lambda: self.move_player(player, 0, -64, game_field),
+            "move_left": lambda: self.move_player(player, -64, 0, game_field),
+            "move_right": lambda: self.move_player(player, 64, 0, game_field),
+        }
+
+        try:
+            byte_code = compile_restricted(user_code, '<inline>', 'exec')
+            print(f"Executing user code: {user_code}")
+            print(f"Safe locals before execution: {safe_locals.keys()}")
+            exec(byte_code, {**safe_globals, **utility_builtins}, safe_locals)
+            player.refresh_from_db()  # Убедимся, что данные обновились
+        except Exception as e:
+            print(f"Ошибка выполнения кода: {e}")
+            return JsonResponse({"error": str(e)}, status=400)
+
+        print(f"Player coordinates: x={player.x}, y={player.y}")
+        return JsonResponse({"x": player.x, "y": player.y})
+    
+    
+    def move_player(self, player, dx, dy, game_field):
+        new_x = player.x + dx
+        new_y = player.y + dy
+
+        print(f"Attempting to move player: current=({player.x}, {player.y}), new=({new_x}, {new_y})")
+        print(f"Game field dimensions: width={game_field.width}, height={game_field.height}")
+
+        if 0 <= new_x < game_field.width*64 and 0 <= new_y < game_field.height*64:
+            player.x = new_x
+            player.y = new_y
+            player.save()
+            print(f"Player moved to: ({player.x}, {player.y})")
+        else:
+            raise ValueError("Нельзя выйти за пределы игрового поля")
+        
+
 
 
 @login_required
@@ -195,12 +303,28 @@ class FieldsSettings(View):
             data = json.loads(request.body)  # Загружаем данные из JSON
             fields_form = FieldSaveForm(data)
             task_form = TaskTextForm(data)
+            print(data)
          
             if fields_form.is_valid() and task_form.is_valid():
                 game_field = fields_form.save()
                 task = task_form.save(commit=False)
                 task.gamefield = game_field
                 task.save()
+                # Извлечение данных playerStart и сохранение в модель Player
+                player_data = None
+                for obj in data.get('data', []):  # Перебираем массив `data`
+                    if obj.get('id') == 'player':  # Ищем объект с id: player
+                        player_data = obj
+                        break
+
+                if player_data:
+                    # Сохраняем положение игрока в модели Player
+                    player = Player(
+                        game_field=game_field,  # Если Player связан с GameField
+                        x=player_data.get('x', 0),
+                        y=player_data.get('y', 0)
+                    )
+                    player.save()
                 messages.success(request, "Задача успешно сохранена!")
                 return JsonResponse({'status': 'success'})  # Возвращаем JSON-ответ
             else:

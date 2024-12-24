@@ -2,7 +2,8 @@
 {% load static %}
 
 {% block content %}
-
+{% csrf_token %}
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 <div class="task-container">
     <div class = "task-change">
         <h1>Название курса</h1>
@@ -27,8 +28,11 @@
         <button id = "clearButton" class = "other-btn"><i class="fa fa-refresh" ></i>Очистить</button>
         <button id = "sendButton" class = "other-btn"><i class="fa fa-paper-plane" ></i>Отправить</button>
         </div>
-        <textarea class="code-area" placeholder="Введите код здесь"></textarea>
-        
+        <textarea id="code-input" class="code-area" placeholder="Введите код здесь"></textarea>
+        <div>
+            <p>Координаты игрока: <span id="player-coordinates"></span></p>
+        </div>
+        <p>Player ID: {{ player.user_id }}</p>
     </div>
 </div>
 
@@ -36,6 +40,9 @@
     <canvas id="gameCanvas" ></canvas>
 </div>
 
+<script>
+    const playerId = "{{ player.user_id }}";  <!-- используем переданное значение player.id -->
+</script>
 
 <div class="top-buttons">
     <button id="clueButton" class="btn">Подсказка</button>
@@ -71,6 +78,8 @@
         </p>
     </div>
 </div>
+
+
 
 
 <script src="{% static 'mainapp/js/task.js' %}" defer></script>

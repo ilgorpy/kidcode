@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    let playerStart = { x: 0, y: 0 };
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const cellSize = 64; 
@@ -109,11 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
         const addObject = (type, count) => {
             let placed = 0;
-    
             while (placed < count) {
                 const x = Math.floor(Math.random() * gridWidth) * cellSize;
                 const y = Math.floor(Math.random() * gridHeight) * cellSize;
-    
                 // Проверяем, занята ли клетка
                 const isOccupied = generatedObjects.some(obj => obj.x === x && obj.y === y);
                 if (!isOccupied) {
@@ -123,6 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (type === 'cube') img.src = cubeImage;
                             else if (type === 'hole') img.src = holeImage;
                             else if (type === 'block') img.src = blockImage;
+                            else if (type == 'player') img.src = playerImage;
                             return img;
                         })(),
                         x: x,
@@ -138,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
         addObject('cube', randomData.cube); // Кубики
         addObject('hole', randomData.hole); // Лунки
         addObject('block', randomData.block); // Блоки
+        addObject('player', 1);
     
         return generatedObjects;
     }
@@ -274,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Превышено количество блоков!');
                 limitExceeded = true;
             }
+            
     
             if (!limitExceeded) {
                 // Проверяем, занята ли клетка
@@ -322,6 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         // Добавляем дополнительные данные (например, координаты из canvas)
         jsonData.data = placedObjects; 
+        console.log(jsonData);
         // Отправляем данные через fetch
         fetch('/constructor/', {
             method: 'POST',
@@ -353,6 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         Object.assign(jsonData, randomData);
         jsonData.data = placedObjects; 
+        jsonData.playerStart = playerStart;
         // Отправляем данные через fetch
         fetch('/constructor/', {
             method: 'POST',
