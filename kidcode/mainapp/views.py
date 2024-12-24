@@ -32,7 +32,7 @@ class Task1(View):
             return self.get_task_view(request, pk)
 
     def get_task_view(self, request, pk):
-        # Загрузка задачи
+    # Загрузка задачи
         task = get_object_or_404(Task, pk=pk)
 
         # Используем связь task.gamefield_id для получения игрового поля
@@ -63,12 +63,22 @@ class Task1(View):
         if created:
             print(f"Создан новый игрок для пользователя {request.user.id} и игрового поля {game_field.id} с координатами ({initial_x}, {initial_y})")
 
+        # Извлекаем код из базы данных, если он существует
+        try:
+            code_entry = Code.objects.get(user=request.user, game_field=game_field)
+            user_code = code_entry.code  # Получаем код
+        except Code.DoesNotExist:
+            user_code = ""  # Если кода нет, пустое значение
+
+        # Передаем данные в контекст
         context = {
             'task': task,
             'game_field': game_field,
             'player': player,
+            'user_code': user_code,  # Добавляем код в контекст
         }
         return render(request, self.template_name, context)
+
 
 
 
@@ -132,7 +142,25 @@ class Task1(View):
             print("Code is empty")
             return JsonResponse({"error": "Код не предоставлен"}, status=400)
         
-       
+        # Сохраняем код в базу данных, обновляя существующую запись или создавая новую
+        try:
+            # Пытаемся найти существующую запись
+            code_entry = Code.objects.get(user_id=user_id, game_field=game_field)
+            code_entry.code  = user_code
+            code_entry.save()  # Сохраняем изменения
+            print(f"Обновлена запись кода для пользователя {user_id} на игровом поле {game_field.id}")
+        except Code.DoesNotExist:
+            # Если запись не найдена, создаем новую
+            Code.objects.create(
+                user_id=user_id,
+                game_field=game_field,
+                code=user_code
+            )
+            print(f"Создана новая запись кода для пользователя {user_id} на игровом поле {game_field.id}")
+        except Exception as e:
+            print(f"Error saving code: {e}")
+            return JsonResponse({"error": "Ошибка при сохранении кода"}, status=500)
+
 
         safe_locals = {
             "move_down": lambda: self.move_player(player, 0, 64, game_field),
@@ -162,13 +190,30 @@ class Task1(View):
         print(f"Attempting to move player: current=({player.x}, {player.y}), new=({new_x}, {new_y})")
         print(f"Game field dimensions: width={game_field.width}, height={game_field.height}")
 
-        if 0 <= new_x < game_field.width*64 and 0 <= new_y < game_field.height*64:
-            player.x = new_x
-            player.y = new_y
-            player.save()
-            print(f"Player moved to: ({player.x}, {player.y})")
-        else:
+        if not (0 <= new_x < game_field.width*64 and 0 <= new_y < game_field.height*64):
             raise ValueError("Нельзя выйти за пределы игрового поля")
+        
+        if self.is_cell_occupied(new_x, new_y, game_field):
+            raise ValueError("Клетка занята")
+        
+        player.x = new_x
+        player.y = new_y
+        player.save()
+        print(f"Player moved to: ({player.x}, {player.y})")
+    def is_cell_occupied(self, x, y, game_field):
+        """
+        Проверяет, занята ли клетка с координатами (x, y).
+        :param x: Координата X клетки
+        :param y: Координата Y клетки
+        :param game_field: Объект игрового поля, содержащий список объектов в поле `data`
+        :return: True, если клетка занята, иначе False
+        """
+        for obj in game_field.data:
+            if obj["x"] == x and obj["y"] == y and obj["id"] != "player":
+                # Игрок может находиться на своей клетке, поэтому его игнорируем
+                print(f"Cell occupied by object: {obj['id']} at ({x}, {y})")
+                return True
+        return False
         
 
 

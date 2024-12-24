@@ -40,7 +40,11 @@ class Player(models.Model):
 
 class Code(models.Model):
     user = models.ForeignKey('users.User', on_delete=models.CASCADE, default=21)
+    game_field = models.ForeignKey('GameField', on_delete=models.CASCADE, default=1)
     code = models.TextField()
+
+    class Meta:
+        unique_together = ('user', 'game_field') 
 
 
 class GameField(models.Model):

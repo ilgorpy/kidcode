@@ -123,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             else if (type === 'hole') img.src = holeImage;
                             else if (type === 'block') img.src = blockImage;
                             else if (type == 'player') img.src = playerImage;
+                            else if (type == 'goal') img.src = goalImage;
                             return img;
                         })(),
                         x: x,
@@ -135,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     
         // Добавляем объекты по типу
+        addObject('goal', 1)
         addObject('cube', randomData.cube); // Кубики
         addObject('hole', randomData.hole); // Лунки
         addObject('block', randomData.block); // Блоки
@@ -275,6 +277,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Превышено количество блоков!');
                 limitExceeded = true;
             }
+            else if (currentTemplate.id === 'player' && objectCount >= 1) {
+                alert('Превышено количество игроков!');
+                limitExceeded = true;
+            }
+            else if (currentTemplate.id === 'goal' && objectCount >= 1) {
+                alert('Превышено количество целей!');
+                limitExceeded = true;
+            }
+                
             
     
             if (!limitExceeded) {

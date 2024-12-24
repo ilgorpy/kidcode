@@ -28,7 +28,7 @@
         <button id = "clearButton" class = "other-btn"><i class="fa fa-refresh" ></i>Очистить</button>
         <button id = "sendButton" class = "other-btn"><i class="fa fa-paper-plane" ></i>Отправить</button>
         </div>
-        <textarea id="code-input" class="code-area" placeholder="Введите код здесь"></textarea>
+        <textarea id="code-input" class="code-area" placeholder="Введите код здесь">{{ user_code }}</textarea>
         <div>
             <p>Координаты игрока: <span id="player-coordinates"></span></p>
         </div>
@@ -42,6 +42,9 @@
 
 <script>
     const playerId = "{{ player.user_id }}";  <!-- используем переданное значение player.id -->
+    const playerX = "{{ player.x }}";
+    const playerY = "{{ player.y }}";
+    console.log(playerX, playerY);
 </script>
 
 <div class="top-buttons">
@@ -78,7 +81,6 @@
         </p>
     </div>
 </div>
-
 
 
 

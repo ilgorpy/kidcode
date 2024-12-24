@@ -21,7 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
         cube: new Image(),
         hole: new Image(),
         block: new Image(),
-        player: new Image()
+        player: new Image(),
+        goal: new Image()
     };
 
     // Элементы для учебника
@@ -31,46 +32,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Загружаем JSON-данные игрового поля
     fetch(gameDataUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Ошибка HTTP: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(gameField => {
-            // Данные игрового поля
-            data = gameField.data;
-            const width = gameField.width;
-            const height = gameField.height;
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(gameField => {
+        // Данные игрового поля
+        data = gameField.data;
+        const width = gameField.width;
+        const height = gameField.height;
 
-            // Устанавливаем размеры canvas
-            canvas.width = width * 64; // 64px — размер клетки
-            canvas.height = height * 64;
+        // Устанавливаем размеры canvas
+        canvas.width = width * 64; // 64px — размер клетки
+        canvas.height = height * 64;
 
-            // Подготовка изображений
-            
-            images.cube.src = "/static/mainapp/images/cube.png";   // Путь к изображениям
-            images.hole.src = "/static/mainapp/images/hole.png";
-            images.block.src = "/static/mainapp/images/block.png";
-            images.player.src = "/static/mainapp/images/pixel-last.png";
+        // Подготовка изображений
+        images.cube.src = "/static/mainapp/images/cube.png";   // Путь к изображениям
+        images.hole.src = "/static/mainapp/images/hole.png";
+        images.block.src = "/static/mainapp/images/block.png";
+        images.player.src = "/static/mainapp/images/pixel-last.png";
+        images.goal.src = "/static/mainapp/images/goal.png";
 
-            // Отрисовка игрового поля
-            Promise.all([
-                loadImage(images.cube),
-                loadImage(images.hole),
-                loadImage(images.block),
-                loadImage(images.player)
-            ]).then(() => {
-                drawGrid(width, height);
-                data.forEach(item => {
-                    const { x, y, id } = item;
-                    ctx.drawImage(images[id], x, y, 64, 64); // Рисуем объект на поле
-                });
+        // Отрисовка игрового поля
+        Promise.all([
+            loadImage(images.cube),
+            loadImage(images.hole),
+            loadImage(images.block),
+            loadImage(images.player),
+            loadImage(images.goal)
+        ]).then(() => {
+            drawGrid(width, height);
+            data = data.filter(item => item.id !== 'player');
+            data.forEach(item => {
+                const { x, y, id } = item;
+                ctx.drawImage(images[id], x, y, 64, 64); // Рисуем объект на поле
             });
-        })
-        .catch(error => {
-            console.error('Ошибка загрузки данных игрового поля:', error);
+
+            // Отрисовка игрока на поле
+            ctx.drawImage(images.player, playerX , playerY , 64, 64);  // playerX и playerY передаются из шаблона
         });
+    })
+    .catch(error => {
+        console.error('Ошибка загрузки данных игрового поля:', error);
+    });
 
     // Утилита для загрузки изображений
     function loadImage(img) {
