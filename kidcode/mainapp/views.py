@@ -241,7 +241,7 @@ class Task1(View):
         """
         for obj in game_field.data:
             if obj["x"] == x and obj["y"] == y:
-                if obj["id"] == "goal":
+                if obj["id"] == "goal" or obj["id"] == "player":
                     # Разрешаем перемещение на объект с id "goal"
                     print(f"Cell contains goal: ({x}, {y})")
                     return False

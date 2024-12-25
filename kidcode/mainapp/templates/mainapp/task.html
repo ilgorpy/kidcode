@@ -45,7 +45,42 @@
     let playerX = "{{ player.x }}";
     let playerY = "{{ player.y }}";
     console.log(playerX, playerY);
+    const editor = CodeMirror.fromTextArea(document.getElementById('code-input'), {
+    mode: 'python',
+    lineNumbers: true,
+    theme: 'dracula',
+    matchBrackets: true,
+    autoCloseBrackets: true,
+    tabSize: 4,
+    lineWrapping: true
+  });
 </script>
+
+<style>
+    /* Стили для редактора CodeMirror */
+    .CodeMirror {
+      height: 200px; /* Устанавливаем высоту редактора */
+      font-family: 'Courier New', Courier, monospace; /* Устанавливаем моноширинный шрифт */
+      font-size: 16px; /* Размер шрифта */
+      background-color: #292F31; /* Темный фон редактора */
+      color: #f8f8f2; /* Цвет текста */
+    }
+    .CodeMirror-cursor {
+    border-left: 2px solid #ffffff; /* Цвет и стиль курсора (например, фиолетовый) */
+  }
+ 
+  
+    /* Изменение стилей строковых литералов */
+    .cm-string {
+      color: #98c379; /* Задаем зеленый цвет для строковых литералов */
+    }
+  
+    /* Стили для номера строки */
+    .CodeMirror-gutter {
+      background: #2d2d2d;
+      color: #888;
+    }
+  </style>
 
 <div class="top-buttons">
     <button id="clueButton" class="btn">Подсказка</button>
@@ -66,19 +101,14 @@
     <div class="modal-content">
         <span class="close" id="closeManual">&times;</span>
         <h2>Учебник</h2>
-        <p>Тут будет большая документация по коду и возможностям игрока
-            Тут будет большая докментация по коду и возможностям игрока
-            Тут будет большая документация по коду и возможностям игрока
-            Тут будет большая документация по коду и возможностям игрока
-            Тут будет большая документация по коду и возможностям игрока
-            Тут будет большая документация по коду и возможностям игрока
-            Тут будет большая документация по коду и возможностям игрока
-            Тут будет большая документация по коду и возможностям игрока
-            Тут будет большая документация по коду и возможностям игрока
-            Тут будет большая документация по коду и возможностям игрока
-            Тут будет большая документация по коду и возможностям игрока
-            Тут будет большая документация по коду и возможностям игрока
-        </p>
+        <p>move_left() - движение влево</p>
+        <p>move_right() - движение вправо</p>
+        <p>move_up() - движение вверх</p>
+        <p>move_down() - движение вниз</p>
+        <p>for _ in range(n):
+            move_down()
+            move_right() 
+        - движение вверх и вправо n раз</p>
     </div>
 </div>
 

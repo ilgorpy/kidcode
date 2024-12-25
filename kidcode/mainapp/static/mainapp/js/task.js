@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('startButton').addEventListener('click', async () => {
-        const code = document.getElementById('code-input').value.trim();
+        const code = editor.getValue().trim();
         console.log('Code:', code);
         try {
             const response = await fetch(`/task/${taskId}/${playerId}/`, {
