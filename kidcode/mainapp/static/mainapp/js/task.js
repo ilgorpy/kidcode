@@ -245,4 +245,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    document.getElementById('sendButton').addEventListener('click', function() {
+        
+   
+    
+        // Выполняем fetch-запрос
+        fetch(`/task/${taskId}/submit_grade/${playerId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,  // Добавляем CSRF-токен для защиты от CSRF-атак
+            },
+            body: JSON.stringify({}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Задание отправлено на проверку!');
+            } else {
+                alert('Ошибка: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Произошла ошибка: ' + error.message);
+        });
+    });
+
 });

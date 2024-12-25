@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
-
+from django.utils import timezone
 from django.db.models import Q
 from django.contrib import messages
 from django.http import JsonResponse
@@ -34,6 +34,8 @@ class Task1(View):
     def post(self, request, pk, user_id):
         if 'reset' in request.path:
             return self.post_reset(request, pk, user_id)
+        elif 'submit_grade' in request.path:  # Обработка отправки оценки
+            return self.submit_grade(request, pk, user_id)
         else:
             return self.post_move_player(request, pk, user_id)
 
@@ -301,6 +303,52 @@ class Task1(View):
             print(f"No code found for player {user_id}. Nothing to clear.")
 
         return JsonResponse({'status': 'success', 'message': 'Player and code reset successfully'})
+    
+    def submit_grade(self, request, pk, user_id):
+        # Проверяем, что это POST-запрос с JSON данными
+        if request.method != 'POST':
+            return JsonResponse({'error': 'Неверный метод запроса'}, status=405)
+
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Некорректный формат данных'}, status=400)
+
+        # Получаем оценку и статус из данных POST-запроса
+        grade = data.get('grade', 'fail')  # Значение по умолчанию 'fail'
+        status = data.get('status', 'sended')  # Значение по умолчанию 'sended'
+
+        if not grade or grade not in ['pass', 'fail']:
+            return JsonResponse({'error': 'Неверно указана оценка'}, status=400)
+
+        if not status or status not in ['sended', 'not_sended']:
+            return JsonResponse({'error': 'Неверно указан статус'}, status=400)
+
+        # Получаем задачу
+        try:
+            task = get_object_or_404(Task, pk=pk)
+            print(task)
+        except Task.DoesNotExist:
+            return JsonResponse({'error': 'Задача не найдена'}, status=404)
+
+        # Получаем запись кода для пользователя и задачи
+        try:
+            code_entry = Code.objects.get(user_id=user_id, game_field=task.gamefield)
+        except Code.DoesNotExist:
+            return JsonResponse({'error': 'Код не найден для этой задачи и пользователя'}, status=404)
+
+        # Создаем запись в модели Grade
+        grade_entry = Grade(
+            task=task,
+            user_id=user_id,
+            code=code_entry,
+            grade=grade,
+            status=status,
+            submission_date=timezone.now()
+        )
+        grade_entry.save()
+
+        return JsonResponse({'status': 'success', 'message': 'Оценка успешно отправлена'})
         
 
 
