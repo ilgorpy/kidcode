@@ -53,6 +53,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh; 
+    overflow: hidden; /* Отключаем прокрутку на фоне */
 }
 
 .form-grid {
@@ -660,10 +661,10 @@ form.change{
  #gameCanvas {
   border: 3px solid #ccc;
   background: transparent;
-  position: absolute;
+  position: fixed; /* Используем fixed позиционирование */
   left: calc(400px + 35%);
   right: 20%;
-  
+  z-index: 10; /* Убедитесь, что canvas не перекрывается */
 }
 
 #templates {
@@ -917,4 +918,8 @@ hr{
 
 .other-btn:hover {
   background-color: #0b7223;
+}
+
+.swal2-popup {
+  z-index: 9999; /* Увеличьте z-index для SweetAlert2, чтобы окно было поверх других элементов */
 }

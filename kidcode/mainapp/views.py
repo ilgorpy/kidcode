@@ -116,7 +116,8 @@ class Task1(View):
     def post(self, request, pk, user_id):
         print(f"Task ID: {pk}, Player ID: {user_id}")
         print(f"Request Body: {request.body.decode('utf-8')}")
-         # Получаем задачу и игровое поле
+
+        # Получаем задачу и игровое поле
         try:
             task = get_object_or_404(Task, pk=pk)
             game_field = get_object_or_404(GameField, id=task.gamefield_id)
@@ -130,6 +131,7 @@ class Task1(View):
         except Player.DoesNotExist:
             return JsonResponse({"error": "Player not found"}, status=404)
 
+        # Получаем и проверяем пользовательский код
         try:
             data = json.loads(request.body)
             user_code = data.get('code', '')
@@ -141,34 +143,36 @@ class Task1(View):
         if not user_code:
             print("Code is empty")
             return JsonResponse({"error": "Код не предоставлен"}, status=400)
-        
-        # Сохраняем код в базу данных, обновляя существующую запись или создавая новую
+
+        # Сохраняем код в базу данных
         try:
-            # Пытаемся найти существующую запись
-            code_entry = Code.objects.get(user_id=user_id, game_field=game_field)
-            code_entry.code  = user_code
-            code_entry.save()  # Сохраняем изменения
-            print(f"Обновлена запись кода для пользователя {user_id} на игровом поле {game_field.id}")
-        except Code.DoesNotExist:
-            # Если запись не найдена, создаем новую
-            Code.objects.create(
-                user_id=user_id,
-                game_field=game_field,
-                code=user_code
+            code_entry, created = Code.objects.update_or_create(
+                user_id=user_id, game_field=game_field,
+                defaults={'code': user_code}
             )
-            print(f"Создана новая запись кода для пользователя {user_id} на игровом поле {game_field.id}")
+            if created:
+                print(f"Создана новая запись кода для пользователя {user_id} на игровом поле {game_field.id}")
+            else:
+                print(f"Обновлена запись кода для пользователя {user_id} на игровом поле {game_field.id}")
         except Exception as e:
             print(f"Error saving code: {e}")
             return JsonResponse({"error": "Ошибка при сохранении кода"}, status=500)
 
+        # Настраиваем безопасные переменные для исполнения кода
+        safe_globals = {
+            "_getiter_": iter,
+            **utility_builtins,
+        }
 
         safe_locals = {
             "move_down": lambda: self.move_player(player, 0, 64, game_field),
             "move_up": lambda: self.move_player(player, 0, -64, game_field),
             "move_left": lambda: self.move_player(player, -64, 0, game_field),
             "move_right": lambda: self.move_player(player, 64, 0, game_field),
+            "range": range,
         }
 
+        # Исполнение пользовательского кода
         try:
             byte_code = compile_restricted(user_code, '<inline>', 'exec')
             print(f"Executing user code: {user_code}")
@@ -179,8 +183,26 @@ class Task1(View):
             print(f"Ошибка выполнения кода: {e}")
             return JsonResponse({"error": str(e)}, status=400)
 
-        print(f"Player coordinates: x={player.x}, y={player.y}")
-        return JsonResponse({"x": player.x, "y": player.y})
+        # Проверка достижения цели (goal)
+        level_completed = False
+        for obj in game_field.data:
+            if obj["x"] == player.x and obj["y"] == player.y and obj["id"] == "goal":
+                print("Player reached the goal!")
+                level_completed = True
+                break
+
+        response_data = {
+            "x": player.x,
+            "y": player.y,
+            "level_completed": level_completed,
+        }
+
+        if level_completed:
+            response_data["message"] = "Уровень пройден!"
+
+        print(f"Player coordinates: x={player.x}, y={player.y}, level_completed={level_completed}")
+        return JsonResponse(response_data)
+
     
     
     def move_player(self, player, dx, dy, game_field):
@@ -200,19 +222,27 @@ class Task1(View):
         player.y = new_y
         player.save()
         print(f"Player moved to: ({player.x}, {player.y})")
+
+        
+
     def is_cell_occupied(self, x, y, game_field):
         """
-        Проверяет, занята ли клетка с координатами (x, y).
+        Проверяет, занята ли клетка с координатами (x, y), за исключением объектов с id "goal".
         :param x: Координата X клетки
         :param y: Координата Y клетки
         :param game_field: Объект игрового поля, содержащий список объектов в поле `data`
-        :return: True, если клетка занята, иначе False
+        :return: True, если клетка занята объектом, на который нельзя перемещаться, иначе False
         """
         for obj in game_field.data:
-            if obj["x"] == x and obj["y"] == y and obj["id"] != "player":
-                # Игрок может находиться на своей клетке, поэтому его игнорируем
-                print(f"Cell occupied by object: {obj['id']} at ({x}, {y})")
-                return True
+            if obj["x"] == x and obj["y"] == y:
+                if obj["id"] == "goal":
+                    # Разрешаем перемещение на объект с id "goal"
+                    print(f"Cell contains goal: ({x}, {y})")
+                    return False
+                else:
+                    # Блокируем перемещение на все остальные объекты
+                    print(f"Cell occupied by object: {obj['id']} at ({x}, {y})")
+                    return True
         return False
         
 

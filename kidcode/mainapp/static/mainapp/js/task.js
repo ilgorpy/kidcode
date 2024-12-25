@@ -159,44 +159,60 @@ document.addEventListener('DOMContentLoaded', () => {
             }
     
             const dataResponse = await response.json();
+            console.log(dataResponse);
+            if (dataResponse.level_completed) {
+                Swal.fire({
+                    title: 'Поздравляем!',
+                    text: dataResponse.message || 'Уровень пройден!',
+                    background: '#22231E',   // Изменение фона
+                    color: '#ffffff',            // Изменение текста
+                    confirmButtonColor: '#0EA524',  // Цвет кнопки "Ок"
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                });
+            }
             if (dataResponse.error) {
                 alert(`Ошибка: ${dataResponse.error}`);
             } else {
                 const { x, y } = dataResponse;
     
-                // Обновляем координаты игрока в глобальной переменной `data`
+                // Обновляем координаты игрока
                 const playerData = data.find(item => item.id === 'player');
                 if (playerData) {
-                    playerData.x = x ; // Преобразуем координаты в пиксели
+                    playerData.x = x;
                     playerData.y = y;
                 }
     
-                // Отображаем новые координаты игрока
-                document.getElementById('player-coordinates').textContent = `(${x}, ${y})`;
-    
                 // Обновляем игровое поле
-                updatePlayerPosition();
+                updatePlayerPosition(x, y);
             }
         } catch (error) {
             console.error('Ошибка выполнения кода:', error);
             alert('Ошибка выполнения кода.');
         }
-    }); 
+    });
+    
 
     
 
     function updatePlayerPosition(x, y) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    
         // Перерисуем сетку
-        drawGrid(canvas.width, canvas.height);
-        console.log(data);
+        drawGrid(canvas.width / 64, canvas.height / 64);
+    
+        // Перерисовываем все элементы
         data.forEach(item => {
-           const { x, y, id } = item;
-          ctx.drawImage(images[id], x, y, 64, 64); // Рисуем объект на поле
-         });
-        
-       
+            const { x, y, id } = item;
+            ctx.drawImage(images[id], x, y, 64, 64); // Рисуем объект на поле
+        });
+    
+        // Обновляем глобальные переменные и рисуем игрока
+        playerX = x; // перевод в пиксели
+        playerY = y;
+        console.log(playerX, playerY);
+        ctx.drawImage(images.player, playerX, playerY, 64, 64);
     }
+    
 
 });
