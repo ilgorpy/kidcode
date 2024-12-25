@@ -7,9 +7,15 @@
 <div class="task-container">
     <div class = "task-change">
         <h1>Название курса</h1>
-    
-        <a href="#" class="button back">Назад</a>
-        <a href="#" class="button forward">Вперед</a>
+        {% if prev_task %}
+        <a href="{% url 'mainapp:task' pk=prev_task.id %}" class="button back">Назад</a>
+        {% endif %}
+        {% if next_task %}
+        <a href="{% url 'mainapp:task' pk=next_task.id %}" class="button forward">Вперед</a>
+        {% endif %}
+
+        
+        
 
         <p>
             {{ task.chapter }}<span class="arrow">&#8250;</span>{{task.level}}

@@ -46,6 +46,9 @@ class Task1(View):
         # Используем связь task.gamefield_id для получения игрового поля
         game_field = get_object_or_404(GameField, id=task.gamefield_id)
 
+        next_task = Task.objects.filter(id__gt=task.id).order_by('id').first()  # Задача с большим id
+        prev_task = Task.objects.filter(id__lt=task.id).order_by('-id').first()  # Задача с меньшим id
+
         # Инициализация начальных координат игрока по умолчанию
         initial_x, initial_y = 0, 0
 
@@ -84,6 +87,8 @@ class Task1(View):
             'game_field': game_field,
             'player': player,
             'user_code': user_code,  # Добавляем код в контекст
+            'next_task': next_task,   # Следующая задача
+            'prev_task': prev_task,   # Предыдущая задача
         }
         return render(request, self.template_name, context)
 
