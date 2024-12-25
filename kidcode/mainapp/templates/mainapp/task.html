@@ -23,16 +23,17 @@
     <p>Дедлайн: {{ task.deadline }}</p>
     <div class="code-editor">
         <h3>Попробуйте!</h3>
-        <div class = "code-buttons">
-        <button id = "startButton" ><i class="fa fa-play" ></i>Запуск кода</button>
-        <button id = "clearButton" class = "other-btn"><i class="fa fa-refresh" ></i>Очистить</button>
-        <button id = "sendButton" class = "other-btn"><i class="fa fa-paper-plane" ></i>Отправить</button>
-        </div>
+        
         <textarea id="code-input" class="code-area" placeholder="Введите код здесь">{{ user_code }}</textarea>
         <div>
             <p>Координаты игрока: <span id="player-coordinates"></span></p>
         </div>
         <p>Player ID: {{ player.user_id }}</p>
+        <div class = "code-buttons">
+            <button id = "startButton" ><i class="fa fa-play" ></i>Запуск кода</button>
+            <button id = "clearButton" class = "other-btn"><i class="fa fa-refresh" ></i>Очистить</button>
+            <button id = "sendButton" class = "other-btn"><i class="fa fa-paper-plane" ></i>Отправить</button>
+            </div>
     </div>
 </div>
 
