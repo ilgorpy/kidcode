@@ -5,6 +5,7 @@
 3. Активировать виртуальное окружение .\venv\Scripts\activate
 4. Перейти в следующую папку kidcode и установить пакеты командой pip install -r requirements.txt
 5. Запуск проекта python manage.py runserver
+6. вай биля респекты на гитхабе набиваю
 
 # DB
 
