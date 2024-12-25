@@ -214,5 +214,35 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.drawImage(images.player, playerX, playerY, 64, 64);
     }
     
+    document.getElementById('clearButton').addEventListener('click', function() {
+
+
+        // Формируем URL для POST-запроса
+        const url = `/task/${taskId}/reset/${playerId}/`;
+
+        // Отправляем POST-запрос на сервер
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({})  // Мы не передаем никаких данных в теле запроса
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Данные очищены успешно!');
+                // Обновляем страницу или выполняем другие действия
+                location.reload();  // Перезагружаем страницу, чтобы обновить игровое поле и данные
+            } else {
+                alert('Ошибка при очистке данных: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка при очистке данных.');
+        });
+    });
 
 });

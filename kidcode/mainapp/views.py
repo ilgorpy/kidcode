@@ -30,6 +30,12 @@ class Task1(View):
             return self.get_player_position(request, pk, request.user.id)
         else:
             return self.get_task_view(request, pk)
+        
+    def post(self, request, pk, user_id):
+        if 'reset' in request.path:
+            return self.post_reset(request, pk, user_id)
+        else:
+            return self.post_move_player(request, pk, user_id)
 
     def get_task_view(self, request, pk):
     # Загрузка задачи
@@ -113,7 +119,7 @@ class Task1(View):
         except Player.DoesNotExist:
             return JsonResponse({"error": "Player not found"}, status=404)
 
-    def post(self, request, pk, user_id):
+    def post_move_player(self, request, pk, user_id):
         print(f"Task ID: {pk}, Player ID: {user_id}")
         print(f"Request Body: {request.body.decode('utf-8')}")
 
@@ -244,6 +250,57 @@ class Task1(View):
                     print(f"Cell occupied by object: {obj['id']} at ({x}, {y})")
                     return True
         return False
+    
+    def post_reset(self, request, pk, user_id):
+        print(f"Resetting data for Task ID: {pk}, Player ID: {user_id}")
+
+        # Получаем задачу и игровое поле
+        try:
+            task = get_object_or_404(Task, pk=pk)
+            game_field = get_object_or_404(GameField, id=task.gamefield_id)
+        except Exception as e:
+            print(f"Error fetching task or game field: {e}")
+            return JsonResponse({"error": "Task or game field not found"}, status=404)
+
+        # Пытаемся получить игрока
+        try:
+            player = Player.objects.get(user_id=user_id, game_field=game_field)
+        except Player.DoesNotExist:
+            return JsonResponse({"error": "Player not found"}, status=404)
+
+        # Извлекаем данные игрового поля
+        try:
+            game_field_data = game_field.data  # Предполагается, что это уже список
+            if isinstance(game_field_data, str):
+                game_field_data = json.loads(game_field_data)  # Преобразуем строку в список
+            # Находим объект игрока в данных игрового поля
+            player_data = next((item for item in game_field_data if item.get('id') == 'player'), None)
+            if player_data:
+                # Если нашли игрока, сбрасываем его координаты
+                initial_x = player_data.get('x', 0)  # Берем координаты из данных
+                initial_y = player_data.get('y', 0)
+            else:
+                initial_x, initial_y = 0, 0  # Если игрока в данных нет, используем 0, 0
+        except Exception as e:
+            print(f"Ошибка при обработке данных игрового поля: {e}")
+            initial_x, initial_y = 0, 0  # Значения по умолчанию, если не удалось обработать данные
+
+        # Сбрасываем координаты игрока
+        player.x = initial_x
+        player.y = initial_y
+        player.save()
+        print(f"Player {user_id} coordinates reset to ({initial_x}, {initial_y})")
+
+        # Сбрасываем код
+        try:
+            code_entry = Code.objects.get(user_id=user_id, game_field=game_field)
+            code_entry.code = ""  # Очищаем код
+            code_entry.save()
+            print(f"Code for player {user_id} cleared.")
+        except Code.DoesNotExist:
+            print(f"No code found for player {user_id}. Nothing to clear.")
+
+        return JsonResponse({'status': 'success', 'message': 'Player and code reset successfully'})
         
 
 

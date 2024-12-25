@@ -14,6 +14,7 @@ urlpatterns = [
     path('task/<int:pk>/clue/', views.Task1.as_view(), name='task-clue'),
     path('task/<int:pk>/<int:user_id>/', views.Task1.as_view(), name='task-move'),
     path('task/<int:pk>/<int:user_id>/position/', views.Task1.as_view(), name='task-position'),
+    path('task/<int:pk>/reset/<int:user_id>/', views.Task1.as_view(), name='reset_player_and_code'),
     path('journal/', views.Journal.as_view(), name='journal'),
     path('record/', views.record, name='record'),
     path('update_grade/', views.update_grade, name='update_grade'),
