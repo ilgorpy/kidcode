@@ -33,6 +33,7 @@
         <th>Статус</th>
         <th>Оценка</th>
         <th>Код</th>
+        <th>Task id</th>
       </tr>
     </thead>
     <tbody>
@@ -56,8 +57,10 @@
             </select>
           </td>
           <td>
-            <button class="download-btn">⬇</button>
+            <button class="download-btn" task-id="{{ entry.task_id }}" user-id="{{ entry.user_id }}">⬇</button>
+            {% comment %} <button class="download-btn"></button> {% endcomment %}
           </td>
+          <td>{{ entry.task_id }}</td>
         </tr>
       {% endfor %}
     </tbody>
@@ -81,6 +84,21 @@
   messages.forEach(message => {
       showPopup(message);
   });
+  document.querySelectorAll('.download-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      
+      const taskId = this.getAttribute('task-id');
+      const userId = this.getAttribute('user-id');
+      console.log(taskId); // Получаем ID уровня
+      const url = `/sended_task/${taskId}/${userId}`; // Указываем путь к вашему представлению
+
+      // Переход на страницу с деталями
+      window.location.href = url; 
+    });
+  });
+</script>
+<script>
+  
 </script>
 <script src="{% static 'mainapp/js/update_grade.js' %}"></script>
 {% endblock %}

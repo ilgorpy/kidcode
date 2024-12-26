@@ -377,15 +377,22 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify(jsonData)
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                alert('Сохранение прошло успешно!');
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-                alert('Произошла ошибка при сохранении.');
-            });
+        .then(response => {
+            if (!response.ok) { // Проверяем, успешен ли ответ
+                return response.json().then(errData => {
+                    throw new Error(errData.error || 'Ошибка при сохранении'); // Генерируем ошибку с сообщением
+                });
+            }
+            return response.json(); // Возвращаем JSON-ответ
+        })
+        .then(data => {
+            console.log(data);
+            alert('Сохранение прошло успешно!');
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка при сохранении: ' + error.message); // Выводим сообщение об ошибке
+        });
     });
 
 });

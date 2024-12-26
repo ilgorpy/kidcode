@@ -43,6 +43,7 @@ class Code(models.Model):
     game_field = models.ForeignKey('GameField', on_delete=models.CASCADE, default=1)
     code = models.TextField()
 
+
     class Meta:
         unique_together = ('user', 'game_field') 
 
@@ -72,6 +73,8 @@ class JournalView(models.Model):
     grade = models.CharField(max_length=4)
     code = models.TextField()
     grade_id = models.IntegerField()
+    code_id = models.IntegerField()
+    user_id = models.IntegerField()
 
     class Meta:
         managed = False

@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import connection
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
@@ -17,6 +18,67 @@ from mainapp.mixins import RoleRequiredMixin
 from users.models import User
 
 from RestrictedPython import compile_restricted, safe_globals, utility_builtins
+
+
+def get_sended_task(request, pk, user_id):
+    # Загрузка задачи
+        task = get_object_or_404(Task, pk=pk)
+        
+        print("dssdds")
+        # Используем связь task.gamefield_id для получения игрового поля
+        game_field = get_object_or_404(GameField, id=task.gamefield_id)
+
+        next_task = Task.objects.filter(id__gt=task.id).order_by('id').first()  # Задача с большим id
+        prev_task = Task.objects.filter(id__lt=task.id).order_by('-id').first()  # Задача с меньшим id
+
+        # Инициализация начальных координат игрока по умолчанию
+        initial_x, initial_y = 0, 0
+
+        # Попытка найти игрока в данных игрового поля
+        try:
+            game_field_data = game_field.data  # Предполагается, что это уже список
+            if isinstance(game_field_data, str):
+                game_field_data = json.loads(game_field_data)  # Преобразование из строки JSON, если это строка
+            player_data = next((item for item in game_field_data if item.get('id') == 'player'), None)
+            if player_data:
+                initial_x = player_data.get('x', 0)
+                initial_y = player_data.get('y', 0)
+        except Exception as e:
+            print(f"Ошибка при обработке данных игрового поля: {e}")
+
+        # Извлекаем код из базы данных, если он существует
+        try:
+            code_entry = Code.objects.get(user=user_id, game_field=game_field)
+            user_code = code_entry.code  # Получаем код
+        except Code.DoesNotExist:
+            user_code = ""  # Если кода нет, пустое значение
+
+        
+
+        # Проверяем, существует ли Player для данного пользователя и игрового поля
+        player, created = Player.objects.get_or_create(
+            user=user_id,
+            game_field=game_field,
+            defaults={'x': initial_x, 'y': initial_y}  # Используем извлеченные координаты
+        )
+
+        if created:
+            print(f"Создан новый игрок для пользователя {request.user.id} и игрового поля {game_field.id} с координатами ({initial_x}, {initial_y})")
+
+        
+
+        # Передаем данные в контекст
+        context = {
+            'task': task,
+            'game_field': game_field,
+            'player': player,
+            'user_code': user_code,  # Добавляем код в контекст
+            'next_task': next_task,   # Следующая задача
+            'prev_task': prev_task,   # Предыдущая задача
+        }
+        print(context)
+        return render(request, 'mainapp/task.html', context)
+
 
 class Task1(View):
     template_name = 'mainapp/task.html'
@@ -42,7 +104,7 @@ class Task1(View):
     def get_task_view(self, request, pk):
     # Загрузка задачи
         task = get_object_or_404(Task, pk=pk)
-
+        print(task)
         # Используем связь task.gamefield_id для получения игрового поля
         game_field = get_object_or_404(GameField, id=task.gamefield_id)
 
@@ -337,10 +399,12 @@ class Task1(View):
             return JsonResponse({'error': 'Задача не найдена'}, status=404)
 
         # Получаем запись кода для пользователя и задачи
-        try:
-            code_entry = Code.objects.get(user_id=user_id, game_field=task.gamefield)
-        except Code.DoesNotExist:
-            return JsonResponse({'error': 'Код не найден для этой задачи и пользователя'}, status=404)
+
+        code_entry = Code.objects.get(user_id=user_id, game_field=task.gamefield)
+            
+        if not code_entry.code.strip():  # Используем strip() для удаления пробелов
+            return JsonResponse({'error': 'Код не найден или пуст для этой задачи и пользователя'}, status=404)
+
 
         # Создаем запись в модели Grade
         grade_entry = Grade(
@@ -489,6 +553,18 @@ class FieldsSettings(View):
             fields_form = FieldSaveForm(data)
             task_form = TaskTextForm(data)
             print(data)
+
+            try:
+        # Преобразуем строку дедлайна в объект datetime
+                deadline = datetime.strptime(data['deadline'], '%Y-%m-%d')
+            except ValueError:
+                return JsonResponse({'error': 'Некорректный формат даты дедлайна'}, status=400)
+
+    # Проверяем, что дедлайн больше текущей даты
+            if deadline <= datetime.now():
+                print(data['deadline'])
+                return JsonResponse({'error': 'Дедлайн должен быть больше текущей даты'}, status=400)
+
          
             if fields_form.is_valid() and task_form.is_valid():
                 game_field = fields_form.save()
