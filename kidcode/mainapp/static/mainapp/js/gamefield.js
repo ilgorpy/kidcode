@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const manualForm = document.getElementById('manualForm');
     
         autoButton.addEventListener('click', () => {
+            clearField(); // Очищаем поле
             manualForm.style.display = 'none'; // Скрываем ручную форму
             generateButton.style.display = 'block';
             saveauto.style.display = 'block';
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     
         manualButton.addEventListener('click', () => {
+            clearField(); // Очищаем поле
             manualForm.style.display = 'block'; // Показываем ручную форму
             generateButton.style.display = 'none';
             saveauto.style.display = 'none';
@@ -67,6 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
         maxBlocks = parseInt(blockInput.value, 10) || 0;
     });
 
+    function clearField() {
+        placedObjects = []; // Очищаем массив объектов
+        
+        drawGrid(); // Перерисовываем сетку
+    }
 
     generateButton.addEventListener("click", function () {
         const selectedDifficulty = difficultySelect.value; // Получаем выбранный уровень
@@ -314,6 +321,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Событие для удаления объекта
+canvas.addEventListener('dblclick', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const objectToRemove = getObjectAtPosition(mouseX, mouseY);
+    if (objectToRemove) {
+        // Удаляем объект из массива
+        const index = placedObjects.indexOf(objectToRemove);
+        if (index > -1) {
+            placedObjects.splice(index, 1);
+        }
+        drawGrid(); // Перерисовываем сетку
+    }
+});
+
     gridWidth.addEventListener('blur', updateCanvasSize);
     gridHeight.addEventListener('blur', updateCanvasSize);
 
@@ -323,6 +347,10 @@ document.addEventListener('DOMContentLoaded', () => {
     //Функция для обработки ручного поля
     savemanual.addEventListener('click', function (e) {
         e.preventDefault(); // Отключаем стандартное поведение формы
+        if (placedObjects.length === 0) {
+            alert('Поле пустое! Пожалуйста, добавьте объекты перед сохранением.');
+            return; // Останавливаем выполнение функции
+        }
         // Собираем данные из формы
         const formData = new FormData(textform);
         const formData2 = new FormData(manualform);
@@ -345,20 +373,31 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify(jsonData)
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                alert('Сохранение прошло успешно!');
-            })
+        .then(response => {
+            if (!response.ok) { // Проверяем, успешен ли ответ
+                return response.json().then(errData => {
+                    throw new Error(errData.error || 'Ошибка при сохранении'); // Генерируем ошибку с сообщением
+                });
+            }
+            return response.json(); // Возвращаем JSON-ответ
+        })
+        .then(data => {
+            console.log(data);
+            alert('Сохранение прошло успешно!');
+        })
             .catch(error => {
                 console.error('Ошибка:', error);
-                alert('Произошла ошибка при сохранении.');
+                alert(error.message);
             });
     });
 
     //Функция для обработки автоматического поля
     saveauto.addEventListener('click', function (e) {
         e.preventDefault(); // Отключаем стандартное поведение формы
+        if (placedObjects.length === 0) {
+            alert('Поле пустое! Пожалуйста, добавьте объекты перед сохранением.');
+            return; // Останавливаем выполнение функции
+        }
         // Собираем данные из формы
         const formData = new FormData(textform);
         const jsonData = {};

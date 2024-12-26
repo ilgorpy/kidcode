@@ -550,6 +550,11 @@ class FieldsSettings(View):
 
     def post(self, request, *args, **kwargs):
             data = json.loads(request.body)  # Загружаем данные из JSON
+            for obj in data.get('data', []):  # Перебираем массив `data`
+                if not (obj.get('id') == 'player'):
+                    return JsonResponse({'error': 'На поле должен быть персонаж'}, status=400) 
+                elif not (obj.get('id') == 'goal'):
+                    return JsonResponse({'error': 'На поле должен быть финиш'}, status=400)
             fields_form = FieldSaveForm(data)
             task_form = TaskTextForm(data)
             print(data)
