@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    let playerStart = { x: 0, y: 0 };
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const cellSize = 64; 
@@ -40,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const manualForm = document.getElementById('manualForm');
     
         autoButton.addEventListener('click', () => {
+            clearField(); // Очищаем поле
             manualForm.style.display = 'none'; // Скрываем ручную форму
             generateButton.style.display = 'block';
             saveauto.style.display = 'block';
@@ -47,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     
         manualButton.addEventListener('click', () => {
+            clearField(); // Очищаем поле
             manualForm.style.display = 'block'; // Показываем ручную форму
             generateButton.style.display = 'none';
             saveauto.style.display = 'none';
@@ -66,6 +69,14 @@ document.addEventListener('DOMContentLoaded', () => {
         maxBlocks = parseInt(blockInput.value, 10) || 0;
     });
 
+    function clearField() {
+        placedObjects = []; // Очищаем массив объектов
+        gridWidth.value = 4; // Минимальное значение ширины
+        gridHeight.value = 4; // Минимальное значение высоты
+        canvas.width = 4 * cellSize; // Устанавливаем минимальный размер canvas
+        canvas.height = 4 * cellSize;
+        drawGrid(); // Перерисовываем сетку
+    }
 
     generateButton.addEventListener("click", function () {
         const selectedDifficulty = difficultySelect.value; // Получаем выбранный уровень
@@ -109,11 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
         const addObject = (type, count) => {
             let placed = 0;
-    
             while (placed < count) {
                 const x = Math.floor(Math.random() * gridWidth) * cellSize;
                 const y = Math.floor(Math.random() * gridHeight) * cellSize;
-    
                 // Проверяем, занята ли клетка
                 const isOccupied = generatedObjects.some(obj => obj.x === x && obj.y === y);
                 if (!isOccupied) {
@@ -123,6 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (type === 'cube') img.src = cubeImage;
                             else if (type === 'hole') img.src = holeImage;
                             else if (type === 'block') img.src = blockImage;
+                            else if (type == 'player') img.src = playerImage;
+                            else if (type == 'goal') img.src = goalImage;
                             return img;
                         })(),
                         x: x,
@@ -135,9 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     
         // Добавляем объекты по типу
+        addObject('goal', 1)
         addObject('cube', randomData.cube); // Кубики
         addObject('hole', randomData.hole); // Лунки
         addObject('block', randomData.block); // Блоки
+        addObject('player', 1);
     
         return generatedObjects;
     }
@@ -168,10 +181,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateCanvasSize() {
-        const newGridWidth = parseInt(gridWidth.value, 10);
-        const newGridHeight = parseInt(gridHeight.value, 10);
+        const newGridWidth = parseInt(document.getElementById('id_width').value, 10); // Считываем значение ширины
+        const newGridHeight = parseInt(document.getElementById('id_height').value, 10); // Считываем значение высоты
 
         if (isNaN(newGridWidth) || isNaN(newGridHeight)) {
+    
             return;
         }
 
@@ -274,6 +288,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Превышено количество блоков!');
                 limitExceeded = true;
             }
+            else if (currentTemplate.id === 'player' && objectCount >= 1) {
+                alert('Превышено количество игроков!');
+                limitExceeded = true;
+            }
+            else if (currentTemplate.id === 'goal' && objectCount >= 1) {
+                alert('Превышено количество целей!');
+                limitExceeded = true;
+            }
+                
+            
     
             if (!limitExceeded) {
                 // Проверяем, занята ли клетка
@@ -301,6 +325,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Событие для удаления объекта
+canvas.addEventListener('dblclick', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const objectToRemove = getObjectAtPosition(mouseX, mouseY);
+    if (objectToRemove) {
+        // Удаляем объект из массива
+        const index = placedObjects.indexOf(objectToRemove);
+        if (index > -1) {
+            placedObjects.splice(index, 1);
+        }
+        drawGrid(); // Перерисовываем сетку
+    }
+});
+
     gridWidth.addEventListener('blur', updateCanvasSize);
     gridHeight.addEventListener('blur', updateCanvasSize);
 
@@ -310,6 +351,10 @@ document.addEventListener('DOMContentLoaded', () => {
     //Функция для обработки ручного поля
     savemanual.addEventListener('click', function (e) {
         e.preventDefault(); // Отключаем стандартное поведение формы
+        if (placedObjects.length === 0) {
+            alert('Поле пустое! Пожалуйста, добавьте объекты перед сохранением.');
+            return; // Останавливаем выполнение функции
+        }
         // Собираем данные из формы
         const formData = new FormData(textform);
         const formData2 = new FormData(manualform);
@@ -320,10 +365,8 @@ document.addEventListener('DOMContentLoaded', () => {
         formData2.forEach((value, key) => {
             jsonData[key] = value;
         });
-
         // Добавляем дополнительные данные (например, координаты из canvas)
         jsonData.data = placedObjects; 
-        console.log("Я вызываюсь почему то блять")
         console.log(jsonData);
         // Отправляем данные через fetch
         fetch('/constructor/', {
@@ -334,31 +377,40 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify(jsonData)
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                alert('Сохранение прошло успешно!');
-            })
+        .then(response => {
+            if (!response.ok) { // Проверяем, успешен ли ответ
+                return response.json().then(errData => {
+                    throw new Error(errData.error || 'Ошибка при сохранении'); // Генерируем ошибку с сообщением
+                });
+            }
+            return response.json(); // Возвращаем JSON-ответ
+        })
+        .then(data => {
+            console.log(data);
+            alert('Сохранение прошло успешно!');
+        })
             .catch(error => {
                 console.error('Ошибка:', error);
-                alert('Произошла ошибка при сохранении.');
+                alert(error.message);
             });
     });
 
     //Функция для обработки автоматического поля
     saveauto.addEventListener('click', function (e) {
         e.preventDefault(); // Отключаем стандартное поведение формы
+        if (placedObjects.length === 0) {
+            alert('Поле пустое! Пожалуйста, добавьте объекты перед сохранением.');
+            return; // Останавливаем выполнение функции
+        }
         // Собираем данные из формы
         const formData = new FormData(textform);
         const jsonData = {};
         formData.forEach((value, key) => {
             jsonData[key] = value;
         });
-        console.log("jsonData:", jsonData); // Добавьте это для отладки
-        console.log("randomdata:" , randomData);
         Object.assign(jsonData, randomData);
         jsonData.data = placedObjects; 
-        console.log(jsonData);
+        jsonData.playerStart = playerStart;
         // Отправляем данные через fetch
         fetch('/constructor/', {
             method: 'POST',
@@ -368,15 +420,22 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify(jsonData)
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                alert('Сохранение прошло успешно!');
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-                alert('Произошла ошибка при сохранении.');
-            });
+        .then(response => {
+            if (!response.ok) { // Проверяем, успешен ли ответ
+                return response.json().then(errData => {
+                    throw new Error(errData.error || 'Ошибка при сохранении'); // Генерируем ошибку с сообщением
+                });
+            }
+            return response.json(); // Возвращаем JSON-ответ
+        })
+        .then(data => {
+            console.log(data);
+            alert('Сохранение прошло успешно!');
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка при сохранении: ' + error.message); // Выводим сообщение об ошибке
+        });
     });
 
 });

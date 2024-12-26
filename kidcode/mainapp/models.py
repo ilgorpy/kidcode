@@ -32,8 +32,20 @@ class Grade(models.Model):
     code = models.ForeignKey('Code', on_delete=models.CASCADE)
 
 
+class Player(models.Model):
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, default=21)
+    game_field = models.ForeignKey('GameField', on_delete=models.CASCADE)
+    x = models.IntegerField(default=0)
+    y = models.IntegerField(default=0)
+
 class Code(models.Model):
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, default=21)
+    game_field = models.ForeignKey('GameField', on_delete=models.CASCADE, default=1)
     code = models.TextField()
+
+
+    class Meta:
+        unique_together = ('user', 'game_field') 
 
 
 class GameField(models.Model):
@@ -61,6 +73,8 @@ class JournalView(models.Model):
     grade = models.CharField(max_length=4)
     code = models.TextField()
     grade_id = models.IntegerField()
+    code_id = models.IntegerField()
+    user_id = models.IntegerField()
 
     class Meta:
         managed = False

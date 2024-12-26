@@ -30,16 +30,19 @@
     <hr>
 
     <div id="templates">
-        <img src="{% static 'mainapp/images/pixel-last.png' %}" class="template" draggable="true" id="template1">
+        <img src="{% static 'mainapp/images/pixel-last.png' %}" class="template" draggable="true" id="template1" data-type = "player">
         <img src="{% static 'mainapp/images/cube.png' %}" class="template" draggable="true" id="template2" data-type="cube">
         <img src="{% static 'mainapp/images/hole.png' %}" class="template" draggable="true" id="template3" data-type="hole">
         <img src="{% static 'mainapp/images/block.png' %}" class="template" draggable="true" id="template4" data-type="block">
+        <img src="{% static 'mainapp/images/goal.png' %}" class="template" draggable="true" id="template5" data-type="goal">
     </div>
     <hr>
     <script>
         const cubeImage = "{% static 'mainapp/images/cube.png' %}";
         const holeImage = "{% static 'mainapp/images/hole.png' %}";
         const blockImage = "{% static 'mainapp/images/block.png' %}";
+        const playerImage = "{% static 'mainapp/images/pixel-last.png' %}";
+        const goalImage = "{% static 'mainapp/images/goal.png' %}";
     
     
     </script>
@@ -64,7 +67,7 @@
         <button type="submit" class="main" id = "savemanual">Сохранить</button>
         <button type="submit" class="main" id = "saveauto" style="display: none;">Сохранить</button>
         <button type="reset" class="clear">Очистить</button>
-        <button type = "button" class="reset" id = "generateButton" style="display: none;">Сгенерировать</button>
+        <button type = "button" class="reset" id = "generateButton" style="display: none;">Генерация</button>
     </div>
 </form>
 </div>

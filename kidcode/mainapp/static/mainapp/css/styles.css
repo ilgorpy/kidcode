@@ -1,3 +1,9 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+
+@font-face {
+  font-family: 'monocraft';
+  src: url('../fonts/Monocraft.ttf') format('truetype');
+}
 .header {
     background: #4E4D4D;
     height: 76px;
@@ -17,6 +23,20 @@
     margin-top: 30px;
   }
 
+  #id_name.change.form-input{
+    width: calc(100%);
+    height: 40px;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #adadad;
+    border-radius: 4px;
+    background-color: #333;
+    color: #fff;
+    outline: none;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+
   a img{
     width: 70px;
     height: 70px;
@@ -26,13 +46,14 @@
   body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: Arial, sans-serif, monocraft;
     background-color: #292F31; 
     color: #ffffff; 
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh; 
+    overflow: hidden; /* Отключаем прокрутку на фоне */
 }
 
 .form-grid {
@@ -147,8 +168,8 @@ form input[type="password"] {
 }
 
 /* Эффект наведения для кнопки */
-form button:hover {
-    background-color: #11ec44; /* Более темный зеленый при наведении */
+.main:hover{
+  background-color: #006400;
 }
 
 
@@ -166,6 +187,10 @@ form a:hover {
 
 .url{
   margin-top: -20px;
+}
+
+i{
+  margin-right: 5px;
 }
 
 #id_username.form-input{
@@ -192,8 +217,8 @@ a.button {
 a.profile_btn{
   height: 50px;
   border: none;
-  margin-left: 30px;
-  border-radius: 4px;
+
+  padding: 0 0 0 30px ;
   color: #ffffff;
   font-size: 16px;
   cursor: pointer;
@@ -206,6 +231,14 @@ a.profile_btn{
   text-align: center;
   font-family: sans-serif;
   font-weight: bold;
+}
+
+#logout:hover{
+  background-color: #A62714;
+}
+
+.profile_btn.active{
+  background-color: #0EA524;
 }
 
 .button-grid{
@@ -337,8 +370,8 @@ body.sidebar-open {
 
 #id_name.form-input, #id_level.form-input, #id_status, #id_grade{
   width: 200px;
-  height: 40px;
-  padding: 10px;
+  height: 35px;
+  padding: 5px;
   margin-bottom: 20px;
   border: 1px solid #adadad;
   border-radius: 4px;
@@ -356,10 +389,10 @@ button.main{
   align-self: center;
   border: none;
   border-radius: 4px;
-  background-color: #0EA524; /* Ярко-зеленый цвет кнопки */
+  background-color: #0EA524; 
   color: #ffffff;
   font-family: monocraft;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -367,15 +400,15 @@ button.main{
 button.reset{
   width: 120px;
   height: 50px;
-  padding: 10px;
+  padding: 5px;
   display: hidden;
   align-self: center;
   border: none;
   border-radius: 4px;
-  background-color: #b0db15; /* Ярко-зеленый цвет кнопки */
+  background-color: #b0db15; 
   color: #ffffff;
   font-family: monocraft;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -391,7 +424,7 @@ button.clear{
   background: transparent; 
   color: #A62714;
   font-family: monocraft;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -399,6 +432,8 @@ button.clear{
 .buttons{
   margin-top: auto;
   margin-bottom: 20px;
+  display: flex;
+  gap:20px;
 }
 
 h1.h{
@@ -599,9 +634,9 @@ form.change{
 }
 
 #id_width.form-input, #id_height.form-input, #id_hole.form-input, #id_cube.form-input, #id_block.form-input, #id_difficult.form-input, #id_level.form-input, #id_chapter.form-input, #id_deadline.form-input{
-  width: 175px;
-  height: 30px;
-  padding: 10px;
+  width: 200px;
+  height: 35px;
+  padding: 5px;
   margin-bottom: 20px;
   border: 1px solid #adadad;
   border-radius: 4px;
@@ -626,15 +661,14 @@ form.change{
  #gameCanvas {
   border: 3px solid #ccc;
   background: transparent;
-  position: absolute;
+  position: fixed; /* Используем fixed позиционирование */
   left: calc(400px + 35%);
   right: 20%;
-  
+  z-index: 10; /* Убедитесь, что canvas не перекрывается */
 }
 
 #templates {
   display: flex;
-  flex-direction: column;
   gap: 10px;
 }
 .template {
@@ -710,12 +744,30 @@ hr{
   background-color: #732724;
   color: #fff;
   float: left;
+  margin-top: 30px;
 }
 
 .button.forward {
   background-color: #008000;
   color: #fff;
   float: right;
+  margin-top: 30px;
+}
+
+.button.back:hover{
+    background-color: #4d1c06;
+}
+
+.button.forward:hover{
+    background-color: #006400;
+}
+
+.button:hover{
+  background-color: #006400;
+}
+
+.task-container p{
+  white-space: wrap;
 }
 
 .arrow {
@@ -727,3 +779,148 @@ hr{
   font-family: monocraft;
   color: #0EA524;
 }
+
+#gamecanvas{
+  border: 3px solid #ccc;
+  background: transparent;
+ 
+} 
+
+.game-area {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.role-selection{
+  margin-left: 60px;
+  display: flex;
+  margin-right: 60px;
+  gap: 240px;
+}
+
+.top-buttons {
+  position: absolute;
+  top: 100px;
+  right: 30px;
+  display: flex;
+  gap: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  background-color: transparent;
+  color: #0EA524;
+  border: 1px solid #0EA524;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: monocraft;
+  width: 120px;
+}
+
+.btn:hover {
+  background-color: #22231E;
+}
+
+/* Стили для модального окна */
+.modal {
+  display: none; /* Скрыто по умолчанию */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #22231E;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.modal-content h2 {
+  font-size: 24px;
+  font-family: monocraft;
+}
+
+.modal-content p{
+  white-space: pre-line;
+  line-height: 1.8;
+}
+
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: rgb(255, 0, 0);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.code-buttons{
+  display: flex;
+  flex-wrap: wrap;
+  width: 260px;
+  gap: 20px;
+}
+
+#startButton{
+  width: 260px;
+  height: 50px;
+  padding: 10px;
+  align-self: center;
+  border: none;
+  border-radius: 4px;
+  background-color: #0EA524;
+  color: #ffffff;
+  font-family: monocraft;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+#startButton:hover {
+  background-color: #0b7223;
+}
+
+.other-btn{
+  width: 120px;
+  height: 50px;
+  padding: 10px;
+  align-self: center;
+  border: none;
+  border-radius: 4px;
+  background-color: #0EA524;
+  color: #ffffff;
+  font-family: monocraft;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.other-btn:hover {
+  background-color: #0b7223;
+}
+
+.swal2-popup {
+  z-index: 9999; /* Увеличьте z-index для SweetAlert2, чтобы окно было поверх других элементов */
+}
+
