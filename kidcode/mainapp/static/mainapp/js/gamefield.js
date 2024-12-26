@@ -71,7 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function clearField() {
         placedObjects = []; // Очищаем массив объектов
-        
+        gridWidth.value = 4; // Минимальное значение ширины
+        gridHeight.value = 4; // Минимальное значение высоты
+        canvas.width = 4 * cellSize; // Устанавливаем минимальный размер canvas
+        canvas.height = 4 * cellSize;
         drawGrid(); // Перерисовываем сетку
     }
 
@@ -178,10 +181,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateCanvasSize() {
-        const newGridWidth = parseInt(gridWidth.value, 10);
-        const newGridHeight = parseInt(gridHeight.value, 10);
+        const newGridWidth = parseInt(document.getElementById('id_width').value, 10); // Считываем значение ширины
+        const newGridHeight = parseInt(document.getElementById('id_height').value, 10); // Считываем значение высоты
 
         if (isNaN(newGridWidth) || isNaN(newGridHeight)) {
+            alert('Введите корректные числовые значения.');
             return;
         }
 
