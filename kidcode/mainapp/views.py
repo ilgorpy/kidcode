@@ -254,6 +254,10 @@ class Task1(View):
             print(f"Safe locals before execution: {safe_locals.keys()}")
             exec(byte_code, {**safe_globals, **utility_builtins}, safe_locals)
             player.refresh_from_db()  # Убедимся, что данные обновились
+        except ValueError as e:
+            # Ловим ошибки перемещения и передаем их клиенту
+            print(f"Ошибка выполнения кода: {e}")
+            return JsonResponse({"error": str(e)}, status=400)
         except Exception as e:
             print(f"Ошибка выполнения кода: {e}")
             return JsonResponse({"error": str(e)}, status=400)
@@ -287,12 +291,18 @@ class Task1(View):
         print(f"Attempting to move player: current=({player.x}, {player.y}), new=({new_x}, {new_y})")
         print(f"Game field dimensions: width={game_field.width}, height={game_field.height}")
 
-        if not (0 <= new_x < game_field.width*64 and 0 <= new_y < game_field.height*64):
-            raise ValueError("Нельзя выйти за пределы игрового поля")
-        
+        if new_x < 0:
+            raise ValueError("Нельзя выйти за левую границу игрового поля")
+        if new_x >= game_field.width * 64:
+            raise ValueError("Нельзя выйти за правую границу игрового поля")
+        if new_y < 0:
+            raise ValueError("Нельзя выйти за нижнюю границу игрового поля")
+        if new_y >= game_field.height * 64:
+            raise ValueError("Нельзя выйти за верхнюю границу игрового поля")
+
         if self.is_cell_occupied(new_x, new_y, game_field):
             raise ValueError("Клетка занята")
-        
+
         player.x = new_x
         player.y = new_y
         player.save()

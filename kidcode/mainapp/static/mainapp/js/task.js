@@ -155,24 +155,33 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     
             if (!response.ok) {
-                throw new Error(`Ошибка HTTP: ${response.status}`);
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Ошибка HTTP: ${response.status}`);
             }
     
             const dataResponse = await response.json();
             console.log(dataResponse);
+    
             if (dataResponse.level_completed) {
                 Swal.fire({
                     title: 'Поздравляем!',
                     text: dataResponse.message || 'Уровень пройден!',
-                    background: '#22231E',   // Изменение фона
-                    color: '#ffffff',            // Изменение текста
-                    confirmButtonColor: '#0EA524',  // Цвет кнопки "Ок"
+                    background: '#22231E',
+                    color: '#ffffff',
+                    confirmButtonColor: '#0EA524',
                     icon: 'success',
                     confirmButtonText: 'OK',
                 });
-            }
-            if (dataResponse.error) {
-                alert(`Ошибка: ${dataResponse.error}`);
+            } else if (dataResponse.error) {
+                Swal.fire({
+                    title: 'Ошибка!',
+                    text: dataResponse.error,
+                    background: '#22231E',
+                    color: '#ffffff',
+                    confirmButtonColor: '#FF0000',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                });
             } else {
                 const { x, y } = dataResponse;
     
@@ -188,9 +197,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Ошибка выполнения кода:', error);
-            alert('Ошибка выполнения кода.');
+            Swal.fire({
+                title: 'Ошибка выполнения!',
+                text: error.message || 'Неизвестная ошибка',
+                background: '#22231E',
+                color: '#ffffff',
+                confirmButtonColor: '#FF0000',
+                icon: 'error',
+                confirmButtonText: 'OK',
+            });
         }
     });
+    
+    
     
 
     
