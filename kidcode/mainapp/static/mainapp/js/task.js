@@ -16,6 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const clueModal = document.getElementById('clueModal');
     const closeClue = document.getElementById('closeClue');
     const clueText = document.getElementById('clueText');
+
+    const startButton = document.getElementById('startButton'); // Кнопка старт
+    let commands = []; // Массив команд
+    let commandIndex = 0; // Индекс текущей команды
+    let intervalId; // Для хранения идентификатора интервала
     
     const images = {
         cube: new Image(),
@@ -141,78 +146,146 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.getElementById('startButton').addEventListener('click', async () => {
-        const code = editor.getValue().trim();
-        console.log('Code:', code);
-        try {
-            const response = await fetch(`/task/${taskId}/${playerId}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken,
-                },
-                body: JSON.stringify({ code }),
-            });
-    
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Ошибка HTTP: ${response.status}`);
-            }
-    
-            const dataResponse = await response.json();
-            console.log(dataResponse);
-    
-            if (dataResponse.level_completed) {
-                Swal.fire({
-                    title: 'Поздравляем!',
-                    text: dataResponse.message || 'Уровень пройден!',
-                    background: '#22231E',
-                    color: '#ffffff',
-                    confirmButtonColor: '#0EA524',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                });
-            } else if (dataResponse.error) {
-                Swal.fire({
-                    title: 'Ошибка!',
-                    text: dataResponse.error,
-                    background: '#22231E',
-                    color: '#ffffff',
-                    confirmButtonColor: '#FF0000',
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                });
-            } else {
-                const { x, y } = dataResponse;
-    
-                // Обновляем координаты игрока
-                const playerData = data.find(item => item.id === 'player');
-                if (playerData) {
-                    playerData.x = x;
-                    playerData.y = y;
-                }
-    
-                // Обновляем игровое поле
-                updatePlayerPosition(x, y);
-            }
-        } catch (error) {
-            console.error('Ошибка выполнения кода:', error);
-            Swal.fire({
-                title: 'Ошибка выполнения!',
-                text: error.message || 'Неизвестная ошибка',
-                background: '#22231E',
-                color: '#ffffff',
-                confirmButtonColor: '#FF0000',
-                icon: 'error',
-                confirmButtonText: 'OK',
-            });
-        }
-    });
-    
-    
-    
 
+    let isRunning = false; // Флаг, указывающий на состояние выполнения
+
+startButton.addEventListener('click', () => {
+    if (isRunning) {
+        // Если код уже выполняется, ничего не делаем
+        return;
+    }
+
+    const code = editor.getValue().trim();
+    const commands = parseCommands(code);
+    commandIndex = 0;
+
+    // Устанавливаем флаг выполнения в true
+    isRunning = true;
+
+    if (intervalId) {
+        clearInterval(intervalId);
+    }
+
+    intervalId = setInterval(() => {
+        if (commandIndex < commands.length) {
+            sendCommand(commands[commandIndex]);
+            commandIndex++;
+        } else {
+            clearInterval(intervalId);
+            isRunning = false; // Сбрасываем флаг, когда выполнение завершено
+        }
+    }, 1000);
+});
     
+    // Функция для разбора команд, включая поддержку циклов
+    function parseCommands(code) {
+        const lines = code.split('\n');
+        const commands = [];
+        
+        let i = 0;
+        while (i < lines.length) {
+            const line = lines[i].trim();
+            
+            // Проверка на наличие цикла
+            if (line.startsWith("for _ in range(") && line.endsWith("):")) {
+                // Извлекаем число итераций
+                const startIndex = line.indexOf('(') + 1;
+                const endIndex = line.indexOf(')');
+                const iterations = line.slice(startIndex, endIndex);
+                const parsedIterations = parseInt(iterations, 10);
+                
+                if (!isNaN(parsedIterations)) {
+                    i++; // Переходим к строкам с командами внутри цикла
+                    
+                    // Считываем команды внутри цикла
+                    const innerCommands = [];
+                    while (i < lines.length && lines[i].trim() !== '') {
+                        innerCommands.push(lines[i].trim());
+                        i++;
+                    }
+                    
+                    // Добавляем команды в массив для каждой итерации
+                    for (let j = 0; j < parsedIterations; j++) {
+                        commands.push(...innerCommands);
+                    }
+                    
+                    // Если есть пустая строка, пропускаем её
+                    i++;
+                } else {
+                    // Если не удалось распарсить итерации, просто добавляем текущую строку как команду
+                    if (line) {
+                        commands.push(line);
+                    }
+                    i++;
+                }
+            } else {
+                // Если это обычная команда, добавляем её в список
+                if (line) {
+                    commands.push(line);
+                }
+                i++;
+            }
+        }
+        
+        return commands;
+    }
+    
+    
+    // async function sendCommand(command) {
+    //     try {
+    //         const response = await fetch(`/task/${taskId}/${playerId}/`, { // URL для отправки команды
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'X-CSRFToken': csrfToken
+    //             },
+    //             body: JSON.stringify({ code: command })
+    //         });
+    
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! статус: ${response.status}`);
+    //         }
+    
+    //         const data = await response.json();
+    //         console.log('Полученные данные:', data); // Логируем полученные данные
+    //         const { x, y } = data;
+    //         updatePlayerPosition(x, y); 
+    //     } catch (error) {
+    //         console.error('Ошибка отправки команды:', error);
+    //     }
+    // }
+
+    function sendCommand(command) {
+        // URL для отправки команды
+        const url = `/task/${taskId}/${playerId}/`;
+    
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ code: command })
+        })
+        .then(response => {
+            if (!response.ok) { // Проверяем, успешен ли ответ
+                return response.json().then(errData => {
+                    throw new Error(errData.error || 'Ошибка при сохранении'); // Генерируем ошибку с сообщением
+                });
+            }
+            return response.json(); // Возвращаем JSON-ответ
+        })
+        .then(data => {
+            console.log('Полученные данные:', data); // Логируем полученные данные
+            const { x, y } = data;
+            updatePlayerPosition(x, y); // Обновляем позицию игрока
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert(error.message);
+        });
+    }
+
 
     function updatePlayerPosition(x, y) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
