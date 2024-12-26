@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const newGridHeight = parseInt(document.getElementById('id_height').value, 10); // Считываем значение высоты
 
         if (isNaN(newGridWidth) || isNaN(newGridHeight)) {
-            alert('Введите корректные числовые значения.');
+    
             return;
         }
 
