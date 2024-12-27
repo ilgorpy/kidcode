@@ -668,7 +668,7 @@ form.change{
   position: fixed; /* Используем fixed позиционирование */
   left: calc(400px + 35%);
   right: 20%;
-  z-index: 10; /* Убедитесь, что canvas не перекрывается */
+
 }
 
 #templates {
@@ -850,6 +850,17 @@ hr{
   border-radius: 10px;
   text-align: center;
 }
+.modal-content-developers{
+  background-color: #22231E;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 700px;
+  border-radius: 10px;
+  text-align: center;
+  line-height: 1.8;
+}
 
 .modal-content h2 {
   font-size: 24px;
@@ -928,3 +939,23 @@ hr{
   z-index: 9999; /* Увеличьте z-index для SweetAlert2, чтобы окно было поверх других элементов */
 }
 
+.developers{
+  
+    width: 160px;
+    height: 50px;
+    text-wrap: nowrap;
+    padding: 5px;
+    align-self: center;
+    border: none;
+    border-radius: 4px;
+    background-color: #333; 
+    color: #ffffff;
+    font-family: monocraft;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .developers_name{
+
+  }
