@@ -296,9 +296,9 @@ class Task1(View):
         if new_x >= game_field.width * 64:
             raise ValueError("Нельзя выйти за правую границу игрового поля")
         if new_y < 0:
-            raise ValueError("Нельзя выйти за нижнюю границу игрового поля")
-        if new_y >= game_field.height * 64:
             raise ValueError("Нельзя выйти за верхнюю границу игрового поля")
+        if new_y >= game_field.height * 64:
+            raise ValueError("Нельзя выйти за нижнюю границу игрового поля")
 
         if self.is_cell_occupied(new_x, new_y, game_field):
             raise ValueError("Клетка занята")
