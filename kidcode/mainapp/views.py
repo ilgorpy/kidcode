@@ -254,6 +254,10 @@ class Task1(View):
             print(f"Safe locals before execution: {safe_locals.keys()}")
             exec(byte_code, {**safe_globals, **utility_builtins}, safe_locals)
             player.refresh_from_db()  # Убедимся, что данные обновились
+        except ValueError as e:
+            # Ловим ошибки перемещения и передаем их клиенту
+            print(f"Ошибка выполнения кода: {e}")
+            return JsonResponse({"error": str(e)}, status=400)
         except Exception as e:
             print(f"Ошибка выполнения кода: {e}")
             return JsonResponse({"error": str(e)}, status=400)
@@ -287,12 +291,18 @@ class Task1(View):
         print(f"Attempting to move player: current=({player.x}, {player.y}), new=({new_x}, {new_y})")
         print(f"Game field dimensions: width={game_field.width}, height={game_field.height}")
 
-        if not (0 <= new_x < game_field.width*64 and 0 <= new_y < game_field.height*64):
-            raise ValueError("Нельзя выйти за пределы игрового поля")
-        
+        if new_x < 0:
+            raise ValueError("Нельзя выйти за левую границу игрового поля")
+        if new_x >= game_field.width * 64:
+            raise ValueError("Нельзя выйти за правую границу игрового поля")
+        if new_y < 0:
+            raise ValueError("Нельзя выйти за верхнюю границу игрового поля")
+        if new_y >= game_field.height * 64:
+            raise ValueError("Нельзя выйти за нижнюю границу игрового поля")
+
         if self.is_cell_occupied(new_x, new_y, game_field):
             raise ValueError("Клетка занята")
-        
+
         player.x = new_x
         player.y = new_y
         player.save()
@@ -549,54 +559,66 @@ class FieldsSettings(View):
         })
 
     def post(self, request, *args, **kwargs):
-            data = json.loads(request.body)  # Загружаем данные из JSON
-            for obj in data.get('data', []):  # Перебираем массив `data`
-                if not (obj.get('id') == 'player'):
-                    return JsonResponse({'error': 'На поле должен быть персонаж'}, status=400) 
-                elif not (obj.get('id') == 'goal'):
-                    return JsonResponse({'error': 'На поле должен быть финиш'}, status=400)
-            fields_form = FieldSaveForm(data)
-            task_form = TaskTextForm(data)
-            print(data)
-
-            try:
+        data = json.loads(request.body)  # Загружаем данные из JSON
+        
+        has_player = False
+        has_goal = False
+        
+        for obj in data.get('data', []):  # Перебираем массив data
+            obj_id = obj.get('id')
+            
+            if obj_id == 'player':
+                has_player = True
+            elif obj_id == 'goal':
+                has_goal = True
+        
+        if not has_player:
+            return JsonResponse({'error': 'На поле должен быть персонаж'}, status=400)
+        
+        if not has_goal:
+            return JsonResponse({'error': 'На поле должен быть финиш'}, status=400)
+        
+        fields_form = FieldSaveForm(data)
+        task_form = TaskTextForm(data)
+        
+        try:
         # Преобразуем строку дедлайна в объект datetime
-                deadline = datetime.strptime(data['deadline'], '%Y-%m-%d')
-            except ValueError:
-                return JsonResponse({'error': 'Некорректный формат даты дедлайна'}, status=400)
+            deadline = datetime.strptime(data['deadline'], '%Y-%m-%d')
+        except ValueError:
+            return JsonResponse({'error': 'Некорректный формат даты дедлайна'}, status=400)
 
-    # Проверяем, что дедлайн больше текущей даты
-            if deadline <= datetime.now():
-                print(data['deadline'])
-                return JsonResponse({'error': 'Дедлайн должен быть больше текущей даты'}, status=400)
+        # Проверяем, что дедлайн больше текущей даты
+        if deadline <= datetime.now():
+            print(data['deadline'])
+            return JsonResponse({'error': 'Дедлайн должен быть больше текущей даты'}, status=400)
 
-         
-            if fields_form.is_valid() and task_form.is_valid():
-                game_field = fields_form.save()
-                task = task_form.save(commit=False)
-                task.gamefield = game_field
-                task.save()
-                # Извлечение данных playerStart и сохранение в модель Player
-                player_data = None
-                for obj in data.get('data', []):  # Перебираем массив `data`
-                    if obj.get('id') == 'player':  # Ищем объект с id: player
-                        player_data = obj
-                        break
+        
+        if fields_form.is_valid() and task_form.is_valid():
+            game_field = fields_form.save()
+            task = task_form.save(commit=False)
+            task.gamefield = game_field
+            task.save()
+            # Извлечение данных playerStart и сохранение в модель Player
+            player_data = None
+            for obj in data.get('data', []):  # Перебираем массив `data`
+                if obj.get('id') == 'player':  # Ищем объект с id: player
+                    player_data = obj
+                    break
 
-                if player_data:
-                    # Сохраняем положение игрока в модели Player
-                    player = Player(
-                        game_field=game_field,  # Если Player связан с GameField
-                        x=player_data.get('x', 0),
-                        y=player_data.get('y', 0)
-                    )
-                    player.save()
-                messages.success(request, "Задача успешно сохранена!")
-                return JsonResponse({'status': 'success'})  # Возвращаем JSON-ответ
-            else:
-                messages.error(request, "Заполните все поля!")
+            if player_data:
+                # Сохраняем положение игрока в модели Player
+                player = Player(
+                    game_field=game_field,  # Если Player связан с GameField
+                    x=player_data.get('x', 0),
+                    y=player_data.get('y', 0)
+                )
+                player.save()
+            messages.success(request, "Задача успешно сохранена!")
+            return JsonResponse({'status': 'success'})  # Возвращаем JSON-ответ
+        else:
+            messages.error(request, "Заполните все поля!")
 
-            return JsonResponse({'status': 'errorrrr', 'errors': fields_form.errors}, status=400)
+        return JsonResponse({'status': 'errorrrr', 'errors': fields_form.errors}, status=400)
 
 
 

@@ -24,22 +24,19 @@
     <hr>
     <h1>Глава: {{ task.chapter }}</h1>
     <h2 >Уровень: {{ task.level }}</h2>
-    <h2>Сложность: <span class="difficulty">{{ task.difficult }}</span></h2>
+    <h2>Сложность: <span class="difficulty">{{ task.get_difficult_display }}</span></h2>
     <p>{{ task.text_exercise }}</p>
     <p>Дедлайн: {{ task.deadline }}</p>
     <div class="code-editor">
         <h3>Попробуйте!</h3>
-        
-        <textarea id="code-input" class="code-area" placeholder="Введите код здесь">{{ user_code }}</textarea>
-        <div>
-            <p>Координаты игрока: <span id="player-coordinates"></span></p>
-        </div>
-        <p>Player ID: {{ player.user_id }}</p>
         <div class = "code-buttons">
             <button id = "startButton" ><i class="fa fa-play" ></i>Запуск кода</button>
             <button id = "clearButton" class = "other-btn"><i class="fa fa-refresh" ></i>Очистить</button>
             <button id = "sendButton" class = "other-btn"><i class="fa fa-paper-plane" ></i>Отправить</button>
             </div>
+        <textarea id="code-input" class="code-area" placeholder="Введите код здесь">{{ user_code }}</textarea>
+       
+        
     </div>
 </div>
 

@@ -439,18 +439,20 @@ button.clear{
 h1.h{
   font-family: monocraft;
   position: absolute;
-  left: 57.5%;
+  left: 50%;
   top: 105px;
   font-size: 48px;
 }
 
 .table-container {
   position: absolute;
-  top: 450px;
+  top: 350px;
   left:35%;
-  width: 50%;
+  width: 50%; 
+  height: 400px;
   margin: 20px auto;
   overflow-x: auto;
+  overflow-y: scroll;
   background-color: #22231E;
   padding: 20px;
   border-radius: 10px;
@@ -531,8 +533,9 @@ h1.h{
 form.change{
   height: 500px;
   width: 750px;
+  margin-top:40px;
   position: absolute;
-  left: 50%;
+  left: 40%;
   top: 20%;
   background-color: #22231E; /* Темно-серый фон для формы */
   border-radius: 8px;
@@ -604,10 +607,11 @@ form.change{
   top: 75px;
   background-color: #22231E;
   width: 400px;
-  height: 100vh;
+  height: 90vh;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 
@@ -690,7 +694,7 @@ form.change{
   flex-direction: column;
   overflow-y: scroll;
   overflow-x: hidden;
-  height: 100vh;
+  height: 90vh;
 }
 
 #chapter-list{
