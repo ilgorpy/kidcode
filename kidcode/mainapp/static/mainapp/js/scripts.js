@@ -79,3 +79,12 @@ function loadLevels(chapterName) {
             });
     }
 }
+developers = document.getElementById('developers');
+developersModal = document.getElementById('developersModal');
+closeDevelopers = document.getElementById('closeDevelopers');
+developers.addEventListener('click', () => {
+    developersModal.style.display = 'block';
+})
+closeDevelopers.addEventListener('click', () => {
+    developersModal.style.display = 'none';
+});

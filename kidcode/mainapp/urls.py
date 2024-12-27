@@ -20,4 +20,5 @@ urlpatterns = [
     path('journal/', views.Journal.as_view(), name='journal'),
     path('record/', views.record, name='record'),
     path('update_grade/', views.update_grade, name='update_grade'),
+    path('about/', views.about, name='about'),
 ]
