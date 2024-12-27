@@ -276,6 +276,9 @@ startButton.addEventListener('click', () => {
             return response.json(); // Возвращаем JSON-ответ
         })
         .then(data => {
+            if (data.level_completed) {
+                alert("Уровень пройден!");
+            }
             console.log('Полученные данные:', data); // Логируем полученные данные
             const { x, y } = data;
             updatePlayerPosition(x, y); // Обновляем позицию игрока
