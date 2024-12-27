@@ -230,30 +230,6 @@ startButton.addEventListener('click', () => {
         return commands;
     }
     
-    
-    // async function sendCommand(command) {
-    //     try {
-    //         const response = await fetch(`/task/${taskId}/${playerId}/`, { // URL для отправки команды
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'X-CSRFToken': csrfToken
-    //             },
-    //             body: JSON.stringify({ code: command })
-    //         });
-    
-    //         if (!response.ok) {
-    //             throw new Error(`HTTP error! статус: ${response.status}`);
-    //         }
-    
-    //         const data = await response.json();
-    //         console.log('Полученные данные:', data); // Логируем полученные данные
-    //         const { x, y } = data;
-    //         updatePlayerPosition(x, y); 
-    //     } catch (error) {
-    //         console.error('Ошибка отправки команды:', error);
-    //     }
-    // }
 
     function sendCommand(command) {
         // URL для отправки команды
@@ -276,12 +252,12 @@ startButton.addEventListener('click', () => {
             return response.json(); // Возвращаем JSON-ответ
         })
         .then(data => {
-            if (data.level_completed) {
-                alert("Уровень пройден!");
-            }
             console.log('Полученные данные:', data); // Логируем полученные данные
             const { x, y } = data;
             updatePlayerPosition(x, y); // Обновляем позицию игрока
+            if (data.level_completed) {
+                setTimeout(() => alert("Уровень пройден!"), 1000);
+            }
         })
         .catch(error => {
             console.error('Ошибка:', error);
