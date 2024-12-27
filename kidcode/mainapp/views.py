@@ -20,6 +20,10 @@ from users.models import User
 from RestrictedPython import compile_restricted, safe_globals, utility_builtins
 
 
+def about(request):
+    return render(request, 'mainapp/about.html')
+
+
 def get_sended_task(request, pk, user_id):
     # Загрузка задачи
         task = get_object_or_404(Task, pk=pk)

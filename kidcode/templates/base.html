@@ -29,12 +29,26 @@
                     <h1>Выберите задание</h1>
                     <div class = "all_chapter-container" >
                     <ul id="chapter-list"></ul>
+                    <a href="{% url 'mainapp:about' %}" class="button">О сайте</a>
                 </div>
                 </div>
 
                 <a href="{% url 'users:login'%}"><img src="{% static 'mainapp/images/pixel-last.png' %}" alt="logo" class = "logo"></a>
                 <p class = "logo_name">KidCode</p>
-                <div class =  "button-grid">
+                <div class = "button-grid">
+                <button id="developers">О разработчиках</button>
+                <div id="developersModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" id="closeDevelopers">&times;</span>
+                        <h2>Самарский университет. Институт информатики и кибернетики</h2>
+                        <p id="clueText">Курсовая работа по дисциплине "Программная инженерия"<br> по теме "Разработка обучающей системы по основам алгоритмизации и программирования"<br>
+                            Разработчики обучающиеся группы 6403-020302D<br>
+                            Мананников М.А.<br>
+                            Рыбаков Р.С.<br>
+                            Горбачев И.Г.<br>
+                            Деревяшкин А.Д.</p>
+                    </div>
+                </div>
                 {% if user.is_staff %}
                         {% for item in menu %}
                             <a href="{% url item.url_name %}" class="button">{{ item.title }}</a>
