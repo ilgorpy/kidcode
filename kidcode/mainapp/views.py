@@ -28,7 +28,6 @@ def get_sended_task(request, pk, user_id):
     # Загрузка задачи
         task = get_object_or_404(Task, pk=pk)
         
-        print("dssdds")
         # Используем связь task.gamefield_id для получения игрового поля
         game_field = get_object_or_404(GameField, id=task.gamefield_id)
 
@@ -54,6 +53,7 @@ def get_sended_task(request, pk, user_id):
         try:
             code_entry = Code.objects.get(user=user_id, game_field=game_field)
             user_code = code_entry.code  # Получаем код
+            
         except Code.DoesNotExist:
             user_code = ""  # Если кода нет, пустое значение
 
@@ -84,8 +84,10 @@ def get_sended_task(request, pk, user_id):
         return render(request, 'mainapp/task.html', context)
 
 
+comands = ""
 class Task1(View):
     template_name = 'mainapp/task.html'
+    
 
     def get(self, request, pk):
         if request.path.endswith('/data/'):
@@ -192,6 +194,7 @@ class Task1(View):
         except Player.DoesNotExist:
             return JsonResponse({"error": "Player not found"}, status=404)
 
+
     def post_move_player(self, request, pk, user_id):
         print(f"Task ID: {pk}, Player ID: {user_id}")
         print(f"Request Body: {request.body.decode('utf-8')}")
@@ -214,6 +217,9 @@ class Task1(View):
         try:
             data = json.loads(request.body)
             user_code = data.get('code', '')
+            commands = data.get('commands', '')
+            # comands.join(user_code)
+            print(commands)
             print(f"Received code: {user_code}")
         except json.JSONDecodeError as e:
             print(f"Error parsing JSON: {e}")
@@ -223,19 +229,6 @@ class Task1(View):
             print("Code is empty")
             return JsonResponse({"error": "Код не предоставлен"}, status=400)
 
-        # Сохраняем код в базу данных
-        try:
-            code_entry, created = Code.objects.update_or_create(
-                user_id=user_id, game_field=game_field,
-                defaults={'code': user_code}
-            )
-            if created:
-                print(f"Создана новая запись кода для пользователя {user_id} на игровом поле {game_field.id}")
-            else:
-                print(f"Обновлена запись кода для пользователя {user_id} на игровом поле {game_field.id}")
-        except Exception as e:
-            print(f"Error saving code: {e}")
-            return JsonResponse({"error": "Ошибка при сохранении кода"}, status=500)
 
         # Настраиваем безопасные переменные для исполнения кода
         safe_globals = {
@@ -272,6 +265,14 @@ class Task1(View):
             if obj["x"] == player.x and obj["y"] == player.y and obj["id"] == "goal":
                 print("Player reached the goal!")
                 level_completed = True
+                str_commands = ""
+                for command in commands:
+                    str_commands += command
+                Code.objects.update_or_create(
+                user_id=user_id, game_field=game_field,
+                defaults={'code': str_commands}
+                )
+                commands = ""
                 break
 
         response_data = {
@@ -415,9 +416,9 @@ class Task1(View):
         # Получаем запись кода для пользователя и задачи
 
         code_entry = Code.objects.get(user_id=user_id, game_field=task.gamefield)
-            
-        if not code_entry.code.strip():  # Используем strip() для удаления пробелов
-            return JsonResponse({'error': 'Код не найден или пуст для этой задачи и пользователя'}, status=404)
+        print(code_entry.code)
+        # if not code_entry.code.strip():  # Используем strip() для удаления пробелов
+        #     return JsonResponse({'error': 'Код не найден или пуст для этой задачи и пользователя'}, status=404)
 
 
         # Создаем запись в модели Grade
