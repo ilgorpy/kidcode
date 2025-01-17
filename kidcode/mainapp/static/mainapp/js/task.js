@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isRunning = false; // Флаг, указывающий на состояние выполнения
 
-startButton.addEventListener('click', () => {
+    startButton.addEventListener('click', () => {
     if (isRunning) {
         // Если код уже выполняется, ничего не делаем
         return;
@@ -169,6 +169,7 @@ startButton.addEventListener('click', () => {
     intervalId = setInterval(() => {
         if (commandIndex < commands.length) {
             sendCommand(commands[commandIndex]);
+            
             commandIndex++;
         } else {
             clearInterval(intervalId);
@@ -234,14 +235,16 @@ startButton.addEventListener('click', () => {
     function sendCommand(command) {
         // URL для отправки команды
         const url = `/task/${taskId}/${playerId}/`;
-    
+        const code = editor.getValue().trim();
+        
+        
         fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrfToken
             },
-            body: JSON.stringify({ code: command })
+            body: JSON.stringify({ code: command, commands: code })
         })
         .then(response => {
             if (!response.ok) { // Проверяем, успешен ли ответ
